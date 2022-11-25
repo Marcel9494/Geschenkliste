@@ -1,0 +1,118 @@
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+
+import '/models/screen_arguments/create_gift_screen_arguments.dart';
+
+class GiftOptionsBottomSheet extends StatefulWidget {
+  final int giftBoxPosition;
+
+  const GiftOptionsBottomSheet({
+    Key? key,
+    required this.giftBoxPosition,
+  }) : super(key: key);
+
+  @override
+  State<GiftOptionsBottomSheet> createState() => _GiftOptionsBottomSheetState();
+}
+
+class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
+  void _showEditGiftScreen() {
+    Navigator.pop(context);
+    Navigator.pushNamed(context, '/createOrEditGift', arguments: CreateGiftScreenArguments(widget.giftBoxPosition));
+  }
+
+  void _deleteGift() async {
+    var giftBox = await Hive.openBox('gifts');
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Geschenk löschen?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Nein',
+                style: TextStyle(
+                  color: Colors.cyanAccent,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.cyanAccent,
+                onPrimary: Colors.black87,
+              ),
+              onPressed: () => {
+                setState(() {
+                  giftBox.deleteAt(widget.giftBoxPosition);
+                }),
+                Navigator.pop(context),
+                Navigator.pop(context),
+                Navigator.popAndPushNamed(context, '/bottomNavBar'),
+              },
+              child: const Text('Ja'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _archiveGift() {
+    // TODO muss noch implementiert werden
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Material(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 20.0, bottom: 4.0),
+                child: Container(
+                  width: 75,
+                  height: 2,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: Colors.white70,
+                  ),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 16.0, bottom: 16.0, left: 16.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: Text('Geschenk:', style: TextStyle(fontSize: 16.0)),
+              ),
+            ),
+            const Divider(height: 0, color: Colors.grey),
+            ListTile(
+              onTap: _showEditGiftScreen,
+              leading: const Icon(Icons.edit_rounded, color: Colors.cyanAccent),
+              title: const Text('Bearbeiten'),
+            ),
+            const Divider(height: 0, color: Colors.grey),
+            ListTile(
+              onTap: _deleteGift,
+              leading: const Icon(Icons.delete_rounded, color: Colors.cyanAccent),
+              title: const Text('Löschen'),
+            ),
+            const Divider(height: 0, color: Colors.grey),
+            ListTile(
+              onTap: _archiveGift,
+              leading: const Icon(Icons.archive_rounded, color: Colors.cyanAccent),
+              title: const Text('Archivieren'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
