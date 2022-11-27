@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:hive_flutter/adapters.dart';
 
+import '/screens/archive_screen.dart';
 import '/screens/gift_list_screen.dart';
 import '/screens/contact_list_screen.dart';
 import '/screens/create_or_edit_gift_screen.dart';
@@ -59,6 +60,7 @@ class MyApp extends StatelessWidget {
         '/giftList': (context) => const GiftListScreen(),
         '/contactList': (context) => const ContactListScreen(),
         '/bottomNavBar': (context) => const BottomNavBar(),
+        '/archive': (context) => const ArchiveScreen(),
       },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {

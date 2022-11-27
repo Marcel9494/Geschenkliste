@@ -3,7 +3,6 @@ import 'package:hive/hive.dart';
 
 import '/models/gift.dart';
 
-import '/components/chips/event_filter_chip.dart';
 import '/components/cards/day_card.dart';
 import '/components/cards/gift_card.dart';
 
@@ -15,7 +14,8 @@ class GiftListScreen extends StatefulWidget {
 }
 
 class _GiftListScreenState extends State<GiftListScreen> {
-  List<String> eventFilter = ['Alle', 'Geburtstage', 'Weihnachten', 'Ostern'];
+  List<String> eventFilter = ['Alle', 'Geburtstag', 'Weihnachtsabend', 'Ostern'];
+  int selectedFilterIndex = 0;
   late List<Gift> gifts = [];
 
   Future<List<Gift>> _getGiftList() async {
@@ -24,6 +24,12 @@ class _GiftListScreenState extends State<GiftListScreen> {
     for (int i = 0; i < giftBox.length; i++) {
       gifts.add(giftBox.getAt(i));
       gifts[i].boxPosition = i;
+      gifts[i].showInFilteredList = true;
+      if (eventFilter[selectedFilterIndex] != 'Alle') {
+        if (gifts[i].event.eventname != eventFilter[selectedFilterIndex]) {
+          gifts[i].showInFilteredList = false;
+        }
+      }
     }
     return gifts;
   }
@@ -61,7 +67,24 @@ class _GiftListScreenState extends State<GiftListScreen> {
               scrollDirection: Axis.horizontal,
               physics: const AlwaysScrollableScrollPhysics(),
               itemBuilder: (BuildContext context, int index) {
-                return EventFilterChip(eventText: eventFilter[index]);
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(10.0, 4.0, 0.0, 4.0),
+                  child: ChoiceChip(
+                    label: Text(
+                      eventFilter[index],
+                      style: TextStyle(color: selectedFilterIndex == index ? Colors.black87 : Colors.white),
+                    ),
+                    selected: selectedFilterIndex == index,
+                    selectedColor: Colors.cyanAccent,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        if (selected) {
+                          selectedFilterIndex = index;
+                        }
+                      });
+                    },
+                  ),
+                );
               },
             ),
           ),
@@ -82,12 +105,14 @@ class _GiftListScreenState extends State<GiftListScreen> {
             builder: (BuildContext context, AsyncSnapshot<List<Gift>> snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height / 2,
-                    child: const Center(
-                      child: CircularProgressIndicator(color: Colors.cyanAccent),
-                    ),
-                  );
+                  return eventFilter[selectedFilterIndex] == 'Alle'
+                      ? SizedBox(
+                          height: MediaQuery.of(context).size.height / 2,
+                          child: const Center(
+                            child: CircularProgressIndicator(color: Colors.cyanAccent),
+                          ),
+                        )
+                      : const SizedBox.shrink();
                 default:
                   if (snapshot.hasError) {
                     return const Center(child: Text('Geschenkliste konnte nicht geladen werden.'));
@@ -100,12 +125,14 @@ class _GiftListScreenState extends State<GiftListScreen> {
                           itemCount: gifts.length,
                           physics: const AlwaysScrollableScrollPhysics(),
                           itemBuilder: (BuildContext context, int index) {
-                            return Row(
-                              children: [
-                                const DayCard(days: 1),
-                                GiftCard(gift: gifts[index]),
-                              ],
-                            );
+                            return gifts[index].showInFilteredList
+                                ? Row(
+                                    children: [
+                                      const DayCard(days: 1),
+                                      GiftCard(gift: gifts[index]),
+                                    ],
+                                  )
+                                : const SizedBox.shrink();
                           },
                         ),
                       );

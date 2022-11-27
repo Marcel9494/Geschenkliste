@@ -39,7 +39,7 @@ class _ContactCardState extends State<ContactCard> {
       child: Padding(
         padding: const EdgeInsets.only(left: 6.0),
         child: GestureDetector(
-          onTap: () => {},
+          onTap: () => Navigator.pushNamed(context, '/archive'),
           child: Card(
             color: const Color(0xFF272727),
             child: Column(

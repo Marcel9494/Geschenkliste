@@ -12,8 +12,6 @@ class Contact extends HiveObject {
   late DateTime? nextBirthday;
   late int remainingDays;
   late int birthdayAge;
-  @HiveField(2)
-  late int creationDate;
 
   Contact();
 }
@@ -26,14 +24,12 @@ class ContactAdapter extends TypeAdapter<Contact> {
   Contact read(BinaryReader reader) {
     return Contact()
       ..contactname = reader.read()
-      ..birthday = reader.read()
-      ..creationDate = reader.read();
+      ..birthday = reader.read();
   }
 
   @override
   void write(BinaryWriter writer, Contact obj) {
     writer.write(obj.contactname);
     writer.write(obj.birthday);
-    writer.write(obj.creationDate);
   }
 }

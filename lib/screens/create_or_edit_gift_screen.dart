@@ -63,10 +63,12 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     _giftnameTextController.text = gift.giftname;
     _contactnameTextController.text = gift.contact.contactname;
     _notesTextController.text = gift.note;
-    final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
     parsedEventDate = gift.event.eventDate;
-    String formattedEventDate = dateFormatter.format(gift.event.eventDate!);
-    _eventDateTextController.text = formattedEventDate;
+    if (gift.event.eventDate != null) {
+      final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
+      String formattedEventDate = dateFormatter.format(gift.event.eventDate!);
+      _eventDateTextController.text = formattedEventDate;
+    }
     selectedEvent = gift.event.eventname;
     selectedContact = gift.contact.contactname;
     return gift;
@@ -110,6 +112,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     }
     // TODO Fehler abfangen selectedContactIndex == -1 || selectedEventIndex == -1
     var giftBox = await Hive.openBox('gifts');
+    events[selectedEventIndex].eventDate = parsedEventDate;
     var gift = Gift()
       ..giftname = _giftnameTextController.text
       ..contact = contacts[selectedContactIndex]

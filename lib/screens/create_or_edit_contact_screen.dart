@@ -71,8 +71,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
     }
     var contact = Contact()
       ..contactname = _contactnameTextController.text
-      ..birthday = parsedBirthdayDate
-      ..creationDate = DateTime.now().millisecondsSinceEpoch;
+      ..birthday = parsedBirthdayDate;
     if (widget.contactBoxPosition == -1) {
       contactBox.add(contact);
     } else {

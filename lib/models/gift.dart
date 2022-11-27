@@ -8,6 +8,7 @@ import '/models/event.dart';
 @HiveType(typeId: 0)
 class Gift extends HiveObject {
   late int boxPosition;
+  late bool showInFilteredList;
   @HiveField(0)
   late String giftname;
   @HiveField(1)
