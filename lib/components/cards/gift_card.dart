@@ -19,6 +19,7 @@ class GiftCard extends StatefulWidget {
 
 class _GiftCardState extends State<GiftCard> {
   String? selectedMenuItem;
+  List<bool> isSelected = [true, false, false, false];
 
   void _showNotes() async {
     showDialog(
@@ -59,15 +60,55 @@ class _GiftCardState extends State<GiftCard> {
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
+                      padding: const EdgeInsets.only(top: 12.0, left: 20.0),
                       child: Text(widget.gift.giftname),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12.0),
+                    child: SizedBox(
+                      height: 30,
+                      width: 90,
+                      child: CustomPaint(
+                        size: const Size(90, 30),
+                        painter: MyLabelPainter(),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: Text(
+                              widget.gift.giftStatus,
+                              style: const TextStyle(color: Colors.white, fontSize: 12.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 12.0, left: 20.0, bottom: 2.0),
+                      child: Text('Für ${widget.gift.contact.contactname}'),
+                    ),
+                  ),
                   IconButton(
-                    padding: EdgeInsets.zero,
+                    padding: const EdgeInsets.fromLTRB(12.0, 16.0, 12.0, 4.0),
                     constraints: const BoxConstraints(),
                     onPressed: () => _showNotes(),
                     icon: const Icon(Icons.event_note_rounded),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 4.0, left: 20.0),
+                      child: Text(widget.gift.event.eventname),
+                    ),
                   ),
                   IconButton(
                     onPressed: () => showCupertinoModalBottomSheet(
@@ -78,21 +119,53 @@ class _GiftCardState extends State<GiftCard> {
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0, bottom: 14.0),
-                child: Text('Für ${widget.gift.contact.contactname}'),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0, bottom: 18.0),
-                child: Row(
-                  children: [
-                    const Icon(Icons.event_rounded),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
-                      child: Text(widget.gift.event.eventname),
-                    ),
-                  ],
-                ),
+              Row(
+                children: [
+                  ToggleButtons(
+                    onPressed: (int index) {
+                      setState(() {
+                        for (int i = 0; i < isSelected.length; i++) {
+                          isSelected[i] = i == index;
+                        }
+                      });
+                    },
+                    isSelected: isSelected,
+                    selectedColor: Colors.cyanAccent,
+                    selectedBorderColor: Colors.cyanAccent,
+                    borderRadius: BorderRadius.circular(4.0),
+                    constraints: const BoxConstraints(minHeight: 30),
+                    children: const <Widget>[
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 9.0),
+                        child: Text(
+                          'Idee',
+                          style: TextStyle(fontSize: 12.0),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 9.0),
+                        child: Text(
+                          'Gekauft',
+                          style: TextStyle(fontSize: 12.0),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 9.0),
+                        child: Text(
+                          'Verpackt',
+                          style: TextStyle(fontSize: 12.0),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 9.0),
+                        child: Text(
+                          'Geschenkt',
+                          style: TextStyle(fontSize: 12.0),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
@@ -100,4 +173,20 @@ class _GiftCardState extends State<GiftCard> {
       ),
     );
   }
+}
+
+class MyLabelPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.green
+      ..strokeWidth = 0.5;
+    canvas.drawLine(const Offset(0, 0), const Offset(90, 0), paint);
+    canvas.drawLine(const Offset(90, 30), const Offset(0, 30), paint);
+    canvas.drawLine(const Offset(0, 30), const Offset(15, 15), paint);
+    canvas.drawLine(const Offset(15, 15), const Offset(0, 0), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

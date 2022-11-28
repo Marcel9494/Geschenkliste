@@ -180,7 +180,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
                         parsedBirthdayDate = await showDatePicker(
                           context: context,
                           locale: const Locale('de', 'DE'),
-                          initialDate: DateTime.now(),
+                          initialDate: DateTime(2000),
                           initialDatePickerMode: DatePickerMode.year,
                           firstDate: DateTime(1900),
                           lastDate: DateTime(2200),

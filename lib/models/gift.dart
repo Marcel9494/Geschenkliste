@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 
 import '/models/contact.dart';
 import '/models/event.dart';
+import 'enums/gift_status.dart';
 
 @HiveType(typeId: 0)
 class Gift extends HiveObject {
@@ -18,6 +19,8 @@ class Gift extends HiveObject {
   @HiveField(3)
   late String note;
   @HiveField(4)
+  late String giftStatus;
+  @HiveField(5)
   late int creationDate;
 }
 
@@ -32,6 +35,7 @@ class GiftAdapter extends TypeAdapter<Gift> {
       ..contact = reader.read()
       ..event = reader.read()
       ..note = reader.read()
+      ..giftStatus = reader.read()
       ..creationDate = reader.read();
   }
 
@@ -41,6 +45,7 @@ class GiftAdapter extends TypeAdapter<Gift> {
     writer.write(obj.contact);
     writer.write(obj.event);
     writer.write(obj.note);
+    writer.write(obj.giftStatus);
     writer.write(obj.creationDate);
   }
 }

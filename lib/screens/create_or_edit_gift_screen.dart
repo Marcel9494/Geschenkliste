@@ -10,6 +10,7 @@ import '/components/buttons/save_button.dart';
 import '/models/gift.dart';
 import '/models/event.dart';
 import '/models/contact.dart';
+import '../models/enums/gift_status.dart';
 import '/models/screen_arguments/create_contact_screen_arguments.dart';
 
 class CreateOrEditGiftScreen extends StatefulWidget {
@@ -39,8 +40,11 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   List<String> eventNames = [];
   List<Contact> contacts = [];
   List<String> contactNames = [];
+  List<String> giftStatusList = [];
+  GiftStatus giftStatus = GiftStatus.idea;
   String selectedEvent = '';
   String selectedContact = '';
+  String selectedGiftStatus = '';
   String giftnameErrorText = '';
   String contactnameErrorText = '';
   String eventDateErrorText = '';
@@ -50,10 +54,14 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   @override
   initState() {
     super.initState();
-    selectedEvent = events[0].eventname;
+    for (int i = 0; i < GiftStatus.values.length; i++) {
+      giftStatusList.add(GiftStatus.values[i].name);
+    }
+    selectedGiftStatus = giftStatusList[0];
     for (int i = 0; i < events.length; i++) {
       eventNames.add(events[i].eventname);
     }
+    selectedEvent = events[0].eventname;
     _getContactList();
   }
 
@@ -116,6 +124,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     var gift = Gift()
       ..giftname = _giftnameTextController.text
       ..contact = contacts[selectedContactIndex]
+      ..giftStatus = selectedGiftStatus
       ..note = _notesTextController.text
       ..event = events[selectedEventIndex]
       ..creationDate = DateTime.now().millisecondsSinceEpoch;
@@ -227,25 +236,31 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                         ),
                       ],
                     ),
-                    TextFormField(
-                      controller: _notesTextController,
-                      textAlignVertical: TextAlignVertical.center,
+                    DropdownButtonFormField<String>(
+                      value: selectedGiftStatus,
+                      icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                      elevation: 16,
+                      isExpanded: true,
                       decoration: const InputDecoration(
-                        hintText: 'Notizen',
-                        hintStyle: TextStyle(color: Colors.white),
-                        contentPadding: EdgeInsets.only(top: 2.0),
                         prefixIcon: Padding(
                           padding: EdgeInsets.only(left: 4.0),
-                          child: IconTheme(
-                            data: IconThemeData(color: Colors.grey),
-                            child: Icon(Icons.sticky_note_2_rounded),
-                          ),
+                          child: Icon(Icons.event_rounded),
                         ),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
                         ),
-                        counterText: '',
                       ),
+                      onChanged: (String? newGiftStatus) {
+                        setState(() {
+                          selectedGiftStatus = newGiftStatus!;
+                        });
+                      },
+                      items: giftStatusList.map<DropdownMenuItem<String>>((String event) {
+                        return DropdownMenuItem<String>(
+                          value: event,
+                          child: Text(event),
+                        );
+                      }).toList(),
                     ),
                     DropdownButtonFormField<String>(
                       value: selectedEvent,
@@ -314,6 +329,26 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                         String formattedEventDate = dateFormatter.format(parsedEventDate!);
                         _eventDateTextController.text = formattedEventDate;
                       },
+                    ),
+                    TextFormField(
+                      controller: _notesTextController,
+                      textAlignVertical: TextAlignVertical.center,
+                      decoration: const InputDecoration(
+                        hintText: 'Notizen',
+                        hintStyle: TextStyle(color: Colors.white),
+                        contentPadding: EdgeInsets.only(top: 2.0),
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.only(left: 4.0),
+                          child: IconTheme(
+                            data: IconThemeData(color: Colors.grey),
+                            child: Icon(Icons.sticky_note_2_rounded),
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
+                        ),
+                        counterText: '',
+                      ),
                     ),
                     SaveButton(
                       boxPosition: widget.giftBoxPosition,

@@ -23,7 +23,7 @@ void main() async {
   Hive.registerAdapter(ContactAdapter());
   Hive.registerAdapter(EventAdapter());
   Hive.registerAdapter(GiftAdapter());
-  // Auskommentieren zum Daten löschen
+  // Auskommentieren zum Daten löschen oder App deinstallieren
   // var contactBox = await Hive.openBox('gifts');
   // await Hive.box('gifts').deleteFromDisk();
   runApp(const MyApp());
