@@ -10,7 +10,7 @@ import '/components/buttons/save_button.dart';
 import '/models/gift.dart';
 import '/models/event.dart';
 import '/models/contact.dart';
-import '../models/enums/gift_status.dart';
+import '/models/enums/gift_state.dart';
 import '/models/screen_arguments/create_contact_screen_arguments.dart';
 
 class CreateOrEditGiftScreen extends StatefulWidget {
@@ -40,11 +40,11 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   List<String> eventNames = [];
   List<Contact> contacts = [];
   List<String> contactNames = [];
-  List<String> giftStatusList = [];
+  List<String> giftStateList = [];
   GiftStatus giftStatus = GiftStatus.idea;
   String selectedEvent = '';
   String selectedContact = '';
-  String selectedGiftStatus = '';
+  String selectedGiftState = '';
   String giftnameErrorText = '';
   String contactnameErrorText = '';
   String eventDateErrorText = '';
@@ -55,9 +55,9 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   initState() {
     super.initState();
     for (int i = 0; i < GiftStatus.values.length; i++) {
-      giftStatusList.add(GiftStatus.values[i].name);
+      giftStateList.add(GiftStatus.values[i].name);
     }
-    selectedGiftStatus = giftStatusList[0];
+    selectedGiftState = giftStateList[0];
     for (int i = 0; i < events.length; i++) {
       eventNames.add(events[i].eventname);
     }
@@ -124,10 +124,9 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     var gift = Gift()
       ..giftname = _giftnameTextController.text
       ..contact = contacts[selectedContactIndex]
-      ..giftStatus = selectedGiftStatus
+      ..giftState = selectedGiftState
       ..note = _notesTextController.text
-      ..event = events[selectedEventIndex]
-      ..creationDate = DateTime.now().millisecondsSinceEpoch;
+      ..event = events[selectedEventIndex];
     if (widget.giftBoxPosition == -1) {
       giftBox.add(gift);
     } else {
@@ -237,7 +236,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                       ],
                     ),
                     DropdownButtonFormField<String>(
-                      value: selectedGiftStatus,
+                      value: selectedGiftState,
                       icon: const Icon(Icons.keyboard_arrow_down_rounded),
                       elevation: 16,
                       isExpanded: true,
@@ -250,12 +249,12 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                           borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
                         ),
                       ),
-                      onChanged: (String? newGiftStatus) {
+                      onChanged: (String? newGiftState) {
                         setState(() {
-                          selectedGiftStatus = newGiftStatus!;
+                          selectedGiftState = newGiftState!;
                         });
                       },
-                      items: giftStatusList.map<DropdownMenuItem<String>>((String event) {
+                      items: giftStateList.map<DropdownMenuItem<String>>((String event) {
                         return DropdownMenuItem<String>(
                           value: event,
                           child: Text(event),

@@ -41,7 +41,7 @@ class _ContactCardState extends State<ContactCard> {
         child: GestureDetector(
           onTap: () => Navigator.pushNamed(context, '/archive'),
           child: Card(
-            color: const Color(0xFF272727),
+            color: const Color(0x0fffffff),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

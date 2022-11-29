@@ -15,7 +15,7 @@ class DayCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(left: 6.0),
         child: Card(
-          color: const Color(0xFF272727),
+          color: const Color(0x0fffffff),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
             child: Center(
