@@ -10,8 +10,11 @@ import '/components/buttons/save_button.dart';
 import '/models/gift.dart';
 import '/models/event.dart';
 import '/models/contact.dart';
+import '/models/enums/events.dart';
 import '/models/enums/gift_state.dart';
 import '/models/screen_arguments/create_contact_screen_arguments.dart';
+
+import '/utils/date_formatter.dart';
 
 class CreateOrEditGiftScreen extends StatefulWidget {
   final int giftBoxPosition;
@@ -31,11 +34,12 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   final TextEditingController _notesTextController = TextEditingController(text: '');
   final TextEditingController _eventDateTextController = TextEditingController(text: '');
   final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
+  final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
   List<Event> events = [
-    Event(eventname: 'Geburtstag'),
-    Event(eventname: 'Weihnachtsabend', eventDate: DateTime(2023, 12, 24)),
-    Event(eventname: 'Ostern', eventDate: DateTime(2023, 4, 9)),
-    Event(eventname: 'Beliebiges Datum'),
+    Event(eventname: Events.birthday.name),
+    Event(eventname: Events.christmas.name, eventDate: DateTime(2023, 12, 24)),
+    Event(eventname: Events.easter.name, eventDate: DateTime(2023, 4, 9)),
+    Event(eventname: Events.anyDate.name),
   ];
   List<String> eventNames = [];
   List<Contact> contacts = [];
@@ -71,14 +75,14 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     _giftnameTextController.text = gift.giftname;
     _contactnameTextController.text = gift.contact.contactname;
     _notesTextController.text = gift.note;
+    // TODO hier weitermachen und EventDate Datenhaltung vereinfachen abgespeichertes Format in Hive ist jetzt: YYYY-MM-DD und Anzeige ist: DD.MM.YYYY
     parsedEventDate = gift.event.eventDate;
     if (gift.event.eventDate != null) {
-      final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
-      String formattedEventDate = dateFormatter.format(gift.event.eventDate!);
-      _eventDateTextController.text = formattedEventDate;
+      _eventDateTextController.text = dateFormatter.format(gift.event.eventDate!);
     }
     selectedEvent = gift.event.eventname;
     selectedContact = gift.contact.contactname;
+    selectedGiftState = gift.giftState;
     return gift;
   }
 
@@ -94,6 +98,17 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
       selectedContact = contactNames[0];
     });
     return contacts;
+  }
+
+  void _setBirthdayDateFromContact() async {
+    for (int i = 0; i < contacts.length; i++) {
+      if (selectedContact == contacts[i].contactname && contacts[i].nextBirthday != null) {
+        setState(() {
+          _eventDateTextController.text = dateFormatter.format(contacts[i].nextBirthday!);
+        });
+        break;
+      }
+    }
   }
 
   void _createGift() async {
@@ -120,7 +135,8 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     }
     // TODO Fehler abfangen selectedContactIndex == -1 || selectedEventIndex == -1
     var giftBox = await Hive.openBox('gifts');
-    events[selectedEventIndex].eventDate = parsedEventDate;
+    //events[selectedEventIndex].eventDate = parsedEventDate;
+    events[selectedEventIndex].eventDate = FormattingStringToYYYYMMDD(_eventDateTextController.text);
     var gift = Gift()
       ..giftname = _giftnameTextController.text
       ..contact = contacts[selectedContactIndex]
@@ -219,6 +235,9 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                             onChanged: (String? contact) {
                               setState(() {
                                 selectedContact = contact!;
+                                if (selectedEvent == Events.birthday.name) {
+                                  _setBirthdayDateFromContact();
+                                }
                               });
                             },
                             items: contactNames.map<DropdownMenuItem<String>>((String contact) {
@@ -243,7 +262,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                       decoration: const InputDecoration(
                         prefixIcon: Padding(
                           padding: EdgeInsets.only(left: 4.0),
-                          child: Icon(Icons.event_rounded),
+                          child: Icon(Icons.tips_and_updates_rounded),
                         ),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
@@ -278,6 +297,11 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                       onChanged: (String? newEvent) {
                         setState(() {
                           selectedEvent = newEvent!;
+                          if (selectedEvent == Events.christmas.name) {
+                            _eventDateTextController.text = '24.12.${DateTime.now().year}';
+                          } else if (selectedEvent == Events.easter.name) {
+                            _eventDateTextController.text = '09.04.${DateTime.now().year}';
+                          }
                         });
                       },
                       items: eventNames.map<DropdownMenuItem<String>>((String event) {
@@ -324,9 +348,8 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                           firstDate: DateTime(1900),
                           lastDate: DateTime(2200),
                         );
-                        final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
-                        String formattedEventDate = dateFormatter.format(parsedEventDate!);
-                        _eventDateTextController.text = formattedEventDate;
+                        print(parsedEventDate);
+                        _eventDateTextController.text = dateFormatter.format(parsedEventDate!);
                       },
                     ),
                     TextFormField(

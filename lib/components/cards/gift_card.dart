@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
+import '../../models/enums/gift_state.dart';
 import '../modal_bottom_sheets/gift_options_bottom_sheet.dart';
 
 import '../buttons/state_button.dart';
@@ -21,12 +22,36 @@ class GiftCard extends StatefulWidget {
 }
 
 class _GiftCardState extends State<GiftCard> {
-  List<bool> isSelected = [false, false, false, false];
+  List<bool> isGiftStateSelected = [false, false, false, false];
 
   @override
   initState() {
     super.initState();
     getCurrentGiftState();
+  }
+
+  void getCurrentGiftState() async {
+    var giftBox = await Hive.openBox('gifts');
+    Gift gift = giftBox.getAt(widget.gift.boxPosition);
+    for (int i = 0; i < isGiftStateSelected.length; i++) {
+      if (gift.giftState == GiftStatus.values[i].name) {
+        isGiftStateSelected[i] = true;
+      } else {
+        isGiftStateSelected[i] = false;
+      }
+    }
+    setState(() {});
+  }
+
+  void updateGiftState(String newGiftState) async {
+    var giftBox = await Hive.openBox('gifts');
+    var updatedGift = Gift()
+      ..giftname = widget.gift.giftname
+      ..contact = widget.gift.contact
+      ..giftState = newGiftState
+      ..note = widget.gift.note
+      ..event = widget.gift.event;
+    giftBox.putAt(widget.gift.boxPosition, updatedGift);
   }
 
   void _showNotes() async {
@@ -51,33 +76,6 @@ class _GiftCardState extends State<GiftCard> {
         );
       },
     );
-  }
-
-  void getCurrentGiftState() async {
-    var giftBox = await Hive.openBox('gifts');
-    Gift gift = giftBox.getAt(widget.gift.boxPosition);
-    // TODO muss refactort werden!
-    if (gift.giftState == 'Idee') {
-      isSelected = [true, false, false, false];
-    } else if (gift.giftState == 'Gekauft') {
-      isSelected = [false, true, false, false];
-    } else if (gift.giftState == 'Verpackt') {
-      isSelected = [false, false, true, false];
-    } else if (gift.giftState == 'Geschenkt') {
-      isSelected = [false, false, false, true];
-    }
-    setState(() {});
-  }
-
-  void updateGiftState(String newGiftState) async {
-    var giftBox = await Hive.openBox('gifts');
-    var updatedGift = Gift()
-      ..giftname = widget.gift.giftname
-      ..contact = widget.gift.contact
-      ..giftState = newGiftState
-      ..note = widget.gift.note
-      ..event = widget.gift.event;
-    giftBox.putAt(widget.gift.boxPosition, updatedGift);
   }
 
   @override
@@ -134,22 +132,15 @@ class _GiftCardState extends State<GiftCard> {
                   ToggleButtons(
                     onPressed: (int index) {
                       setState(() {
-                        for (int i = 0; i < isSelected.length; i++) {
-                          isSelected[i] = i == index;
-                          // TODO muss refactort werden!
-                          if (index == 0) {
-                            updateGiftState('Idee');
-                          } else if (index == 1) {
-                            updateGiftState('Gekauft');
-                          } else if (index == 2) {
-                            updateGiftState('Verpackt');
-                          } else if (index == 3) {
-                            updateGiftState('Geschenkt');
+                        for (int i = 0; i < isGiftStateSelected.length; i++) {
+                          isGiftStateSelected[i] = i == index;
+                          if (i == index) {
+                            updateGiftState(GiftStatus.values[i].name);
                           }
                         }
                       });
                     },
-                    isSelected: isSelected,
+                    isSelected: isGiftStateSelected,
                     selectedColor: Colors.cyanAccent,
                     selectedBorderColor: Colors.cyanAccent,
                     borderRadius: BorderRadius.circular(4.0),
@@ -158,22 +149,22 @@ class _GiftCardState extends State<GiftCard> {
                       StateButton(
                         text: 'Idee',
                         icon: Icons.tips_and_updates_rounded,
-                        isSelected: isSelected[0],
+                        isSelected: isGiftStateSelected[0],
                       ),
                       StateButton(
                         text: 'Gekauft',
                         icon: Icons.shopping_cart,
-                        isSelected: isSelected[1],
+                        isSelected: isGiftStateSelected[1],
                       ),
                       StateButton(
                         text: 'Verpackt',
                         icon: Icons.card_giftcard_rounded,
-                        isSelected: isSelected[2],
+                        isSelected: isGiftStateSelected[2],
                       ),
                       StateButton(
                         text: 'Geschenkt',
                         icon: Icons.volunteer_activism_rounded,
-                        isSelected: isSelected[3],
+                        isSelected: isGiftStateSelected[3],
                       ),
                     ],
                   ),
