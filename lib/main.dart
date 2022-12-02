@@ -17,6 +17,7 @@ import '/models/event.dart';
 import '/models/contact.dart';
 import '/models/screen_arguments/create_contact_screen_arguments.dart';
 import '/models/screen_arguments/create_gift_screen_arguments.dart';
+import '/models/screen_arguments/archive_screen_arguments.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -60,7 +61,6 @@ class MyApp extends StatelessWidget {
         '/giftList': (context) => const GiftListScreen(),
         '/contactList': (context) => const ContactListScreen(),
         '/bottomNavBar': (context) => const BottomNavBar(),
-        '/archive': (context) => const ArchiveScreen(),
       },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
@@ -77,6 +77,14 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute<String>(
               builder: (BuildContext context) => CreateOrEditGiftScreen(
                 giftBoxPosition: args.giftBoxPosition,
+              ),
+              settings: settings,
+            );
+          case '/archive':
+            final args = settings.arguments as ArchiveScreenArguments;
+            return MaterialPageRoute<String>(
+              builder: (BuildContext context) => ArchiveScreen(
+                contactname: args.contactname,
               ),
               settings: settings,
             );

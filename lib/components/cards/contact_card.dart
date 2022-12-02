@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
+import '../../models/screen_arguments/archive_screen_arguments.dart';
 import '../modal_bottom_sheets/contact_options_bottom_sheet.dart';
 
 import '/models/contact.dart';
@@ -39,7 +40,7 @@ class _ContactCardState extends State<ContactCard> {
       child: Padding(
         padding: const EdgeInsets.only(left: 6.0),
         child: GestureDetector(
-          onTap: () => Navigator.pushNamed(context, '/archive'),
+          onTap: () => Navigator.pushNamed(context, '/archive', arguments: ArchiveScreenArguments(widget.contact.contactname)),
           child: Card(
             color: const Color(0x0fffffff),
             child: Column(
