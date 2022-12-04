@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-
-import 'package:geschenkliste/components/cards/archive_card.dart';
-
 import 'package:timelines/timelines.dart';
 
-import '/models/gift.dart';
+import '/components/cards/archive_card.dart';
+
 import '/models/contact.dart';
+import '/models/archived_gift.dart';
 
 class ArchiveScreen extends StatefulWidget {
   final String contactname;
@@ -21,17 +20,38 @@ class ArchiveScreen extends StatefulWidget {
 }
 
 class _ArchiveScreenState extends State<ArchiveScreen> {
-  List<Gift> archivedGifts = [];
+  //List<String> archivedGifts = [];
+  List<ArchivedGift> archivedGifts = [];
 
-  Future<List<Gift>> _getArchivedGiftsFromContact() async {
+  @override
+  initState() {
+    super.initState();
+    _getArchivedGiftsFromContact();
+  }
+
+  Future<List<ArchivedGift>> _getArchivedGiftsFromContact() async {
     List<Contact> contacts = [];
     var contactBox = await Hive.openBox('contacts');
-    archivedGifts.clear();
     for (int i = 0; i < contactBox.length; i++) {
       contacts.add(contactBox.getAt(i));
       if (contacts[i].contactname == widget.contactname) {
-        for (int j = 0; j < contacts[i].archivedGifts.length; j++) {
-          archivedGifts.add(contacts[i].archivedGifts[j]);
+        //for (int j = 0; j < contacts[i].archivedGiftsData.length; j++) {
+        final splittedArchivedGiftEntries = contacts[i].archivedGiftsData.split('|');
+        for (int j = 0; j < splittedArchivedGiftEntries.length; j++) {
+          //print(splittedArchivedGiftEntries[j]);
+          if (splittedArchivedGiftEntries[j].isEmpty) {
+            continue;
+          }
+          final splittedArchivedGiftData = splittedArchivedGiftEntries[j].split(';');
+          print(splittedArchivedGiftData);
+          var archivedGift = ArchivedGift(
+            giftname: splittedArchivedGiftData[0],
+            eventname: splittedArchivedGiftData[1],
+            eventDate: splittedArchivedGiftData[2],
+            note: splittedArchivedGiftData[3],
+            giftState: splittedArchivedGiftData[4],
+          );
+          archivedGifts.add(archivedGift);
         }
         break;
       }
@@ -59,11 +79,11 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
           ),
         ),
         builder: TimelineTileBuilder.fromStyle(
-          itemCount: archivedGifts.length,
+          itemCount: 1,
           contentsAlign: ContentsAlign.basic,
           contentsBuilder: (context, index) => FutureBuilder(
             future: _getArchivedGiftsFromContact(),
-            builder: (BuildContext context, AsyncSnapshot<List<Gift>> snapshot) {
+            builder: (BuildContext context, AsyncSnapshot<List<ArchivedGift>> snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
                   return const Center(
@@ -76,18 +96,10 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                     if (archivedGifts.isEmpty) {
                       return const Center(child: Text('Noch keine Geschenke im Archiv vorhanden.'));
                     } else {
-                      return Expanded(
-                        child: ListView.builder(
-                          itemCount: archivedGifts.length,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemBuilder: (BuildContext context, int index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(24.0),
-                              child: ArchiveCard(
-                                gift: archivedGifts[index],
-                              ),
-                            );
-                          },
+                      return Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: ArchiveCard(
+                          archivedGift: archivedGifts[index],
                         ),
                       );
                     }

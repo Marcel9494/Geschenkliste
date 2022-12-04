@@ -2,8 +2,6 @@ import 'dart:core';
 
 import 'package:hive/hive.dart';
 
-import 'gift.dart';
-
 @HiveType(typeId: 1)
 class Contact extends HiveObject {
   late int boxPosition;
@@ -11,11 +9,11 @@ class Contact extends HiveObject {
   late String contactname;
   @HiveField(1)
   late DateTime? birthday;
+  @HiveField(2)
+  late String archivedGiftsData; // TODO https://github.com/hivedb/hive/issues/33
   late DateTime? nextBirthday;
   late int remainingDays;
   late int birthdayAge;
-  @HiveField(2)
-  late List<Gift> archivedGifts;
 
   Contact();
 }
@@ -29,13 +27,13 @@ class ContactAdapter extends TypeAdapter<Contact> {
     return Contact()
       ..contactname = reader.read()
       ..birthday = reader.read()
-      ..archivedGifts = reader.read();
+      ..archivedGiftsData = reader.read();
   }
 
   @override
   void write(BinaryWriter writer, Contact obj) {
     writer.write(obj.contactname);
     writer.write(obj.birthday);
-    writer.write(obj.archivedGifts);
+    writer.write(obj.archivedGiftsData);
   }
 }
