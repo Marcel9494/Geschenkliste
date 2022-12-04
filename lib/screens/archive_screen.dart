@@ -35,14 +35,14 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
     for (int i = 0; i < contactBox.length; i++) {
       contacts.add(contactBox.getAt(i));
       if (contacts[i].contactname == widget.contactname) {
-        //for (int j = 0; j < contacts[i].archivedGiftsData.length; j++) {
-        final splittedArchivedGiftEntries = contacts[i].archivedGiftsData.split('|');
-        for (int j = 0; j < splittedArchivedGiftEntries.length; j++) {
+        for (int j = 0; j < contacts[i].archivedGiftsData.length; j++) {
+          //final splittedArchivedGiftEntries = contacts[i].archivedGiftsData.split('|');
+          //for (int j = 0; j < splittedArchivedGiftEntries.length; j++) {
           //print(splittedArchivedGiftEntries[j]);
-          if (splittedArchivedGiftEntries[j].isEmpty) {
-            continue;
-          }
-          final splittedArchivedGiftData = splittedArchivedGiftEntries[j].split(';');
+          //if (splittedArchivedGiftEntries[j].isEmpty) {
+          //  continue;
+          //}
+          final splittedArchivedGiftData = contacts[i].archivedGiftsData[j].split(';');
           print(splittedArchivedGiftData);
           var archivedGift = ArchivedGift(
             giftname: splittedArchivedGiftData[0],

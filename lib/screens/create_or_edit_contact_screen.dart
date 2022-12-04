@@ -72,7 +72,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
     var contact = Contact()
       ..contactname = _contactnameTextController.text
       ..birthday = parsedBirthdayDate
-      ..archivedGiftsData = '';
+      ..archivedGiftsData = [];
     if (widget.contactBoxPosition == -1) {
       contactBox.add(contact);
     } else {

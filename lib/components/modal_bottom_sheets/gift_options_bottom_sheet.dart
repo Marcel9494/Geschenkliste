@@ -74,8 +74,8 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
         // Hive unterstützt aktuell (Stand: 03.12.22) keine Liste von Objekten und kann diese nicht persistent speichern,
         // deshalb wird hier eine String Datenstruktur verwendet um die archivierten Geschenkdaten zu speichern.
         // Open Hive Issue on Github: https://github.com/hivedb/hive/issues/837
-        String archivedGiftsDataString = '${gift.giftname};${gift.event.eventname};${gift.event.eventDate};${gift.note};${gift.giftState}|';
-        contacts[i].archivedGiftsData += archivedGiftsDataString;
+        String archivedGiftsDataString = '${gift.giftname};${gift.event.eventname};${gift.event.eventDate};${gift.note};${gift.giftState}';
+        contacts[i].archivedGiftsData.add(archivedGiftsDataString);
         // TODO hier weitermachen und Code verbessern und versuchen mit List<Object> oder List<String> hinzuzufügen
         contactBox.putAt(i, contacts[i]);
         print(contacts[i].archivedGiftsData);
