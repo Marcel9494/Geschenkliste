@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
+import '../../models/contact.dart';
 import '../../models/enums/gift_state.dart';
 import '../modal_bottom_sheets/gift_options_bottom_sheet.dart';
 
@@ -78,6 +79,64 @@ class _GiftCardState extends State<GiftCard> {
     );
   }
 
+  void _showArchiveGiftDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Geschenk archivieren?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Nein',
+                style: TextStyle(
+                  color: Colors.cyanAccent,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.cyanAccent,
+                onPrimary: Colors.black87,
+              ),
+              child: const Text('Ja'),
+              onPressed: () => {
+                _archiveGift(),
+                Navigator.pop(context),
+                Navigator.popAndPushNamed(context, '/bottomNavBar'),
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _archiveGift() async {
+    List<Contact> contacts = [];
+    var contactBox = await Hive.openBox('contacts');
+    var giftBox = await Hive.openBox('gifts');
+    Gift currentGift = giftBox.getAt(widget.gift.boxPosition);
+    for (int i = 0; i < contactBox.length; i++) {
+      contacts.add(contactBox.getAt(i));
+      if (contacts[i].contactname == currentGift.contact.contactname) {
+        // Hive unterstützt aktuell (Stand: 03.12.22) keine Liste von Objekten und kann diese nicht persistent speichern,
+        // deshalb wird hier eine String Datenstruktur verwendet um die archivierten Geschenkdaten zu speichern.
+        // Open Hive Issue on Github: https://github.com/hivedb/hive/issues/837
+        String archivedGiftsDataString = '${currentGift.giftname};${currentGift.event.eventname};${currentGift.event.eventDate};${currentGift.note};${currentGift.giftState}';
+        contacts[i].archivedGiftsData.add(archivedGiftsDataString);
+        contactBox.putAt(i, contacts[i]);
+        setState(() {
+          giftBox.deleteAt(widget.gift.boxPosition);
+        });
+        break;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -137,6 +196,9 @@ class _GiftCardState extends State<GiftCard> {
                           if (i == index) {
                             updateGiftState(GiftStatus.values[i].name);
                           }
+                        }
+                        if (isGiftStateSelected[3]) {
+                          _showArchiveGiftDialog();
                         }
                       });
                     },

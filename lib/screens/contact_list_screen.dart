@@ -3,6 +3,7 @@ import 'package:geschenkliste/models/screen_arguments/create_contact_screen_argu
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
+import '../components/texts/centered_text.dart';
 import '/models/contact.dart';
 
 import '/components/cards/day_card.dart';
@@ -105,19 +106,10 @@ class _ContactListScreenState extends State<ContactListScreen> {
                   return const Center(child: CircularProgressIndicator(color: Colors.cyanAccent));
                 default:
                   if (snapshot.hasError) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.0),
-                        child: Text(
-                          'Kontakte konnten nicht geladen werden.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16.0),
-                        ),
-                      ),
-                    );
+                    return const CenteredText(text: 'Kontakte konnten nicht geladen werden.', divider: 2);
                   } else {
                     if (contacts.isEmpty) {
-                      return const Center(child: Text('Noch keine Kontakte vorhanden.'));
+                      return const CenteredText(text: 'Noch keine Kontakte vorhanden.', divider: 2);
                     } else {
                       return Expanded(
                         child: RefreshIndicator(

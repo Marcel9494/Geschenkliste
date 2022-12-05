@@ -40,7 +40,7 @@ class _ContactCardState extends State<ContactCard> {
       child: Padding(
         padding: const EdgeInsets.only(left: 6.0),
         child: GestureDetector(
-          onTap: () => Navigator.pushNamed(context, '/archive', arguments: ArchiveScreenArguments(widget.contact.contactname)),
+          onTap: () => Navigator.pushNamed(context, '/archive', arguments: ArchiveScreenArguments(widget.contact)),
           child: Card(
             color: const Color(0x0fffffff),
             child: Column(

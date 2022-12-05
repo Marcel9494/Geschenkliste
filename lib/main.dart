@@ -84,7 +84,7 @@ class MyApp extends StatelessWidget {
             final args = settings.arguments as ArchiveScreenArguments;
             return MaterialPageRoute<String>(
               builder: (BuildContext context) => ArchiveScreen(
-                contactname: args.contactname,
+                contact: args.contact,
               ),
               settings: settings,
             );

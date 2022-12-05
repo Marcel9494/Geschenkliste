@@ -10,7 +10,7 @@ class Contact extends HiveObject {
   @HiveField(1)
   late DateTime? birthday;
   @HiveField(2)
-  late List<String> archivedGiftsData; // TODO https://github.com/hivedb/hive/issues/33
+  late List<String> archivedGiftsData;
   late DateTime? nextBirthday;
   late int remainingDays;
   late int birthdayAge;

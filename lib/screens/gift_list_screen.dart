@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geschenkliste/components/texts/centered_text.dart';
 import 'package:hive/hive.dart';
 
 import '/models/gift.dart';
@@ -115,10 +116,10 @@ class _GiftListScreenState extends State<GiftListScreen> {
                       : const SizedBox.shrink();
                 default:
                   if (snapshot.hasError) {
-                    return const Center(child: Text('Geschenkliste konnte nicht geladen werden.'));
+                    return const CenteredText(text: 'Geschenkliste konnte nicht geladen werden.', divider: 2);
                   } else {
                     if (gifts.isEmpty) {
-                      return const Center(child: Text('Noch keine Geschenke vorhanden.'));
+                      return const CenteredText(text: 'Noch keine Geschenke vorhanden.', divider: 2);
                     } else {
                       return Expanded(
                         child: ListView.builder(

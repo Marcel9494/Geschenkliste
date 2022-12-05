@@ -1,30 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
-import '/models/gift.dart';
 import '/models/contact.dart';
-import '/models/screen_arguments/create_gift_screen_arguments.dart';
 
-class GiftOptionsBottomSheet extends StatefulWidget {
-  final int giftBoxPosition;
+class ArchivedGiftOptionsBottomSheet extends StatefulWidget {
+  final int contactBoxPosition;
+  final int archivedGiftIndex;
 
-  const GiftOptionsBottomSheet({
+  const ArchivedGiftOptionsBottomSheet({
     Key? key,
-    required this.giftBoxPosition,
+    required this.contactBoxPosition,
+    required this.archivedGiftIndex,
   }) : super(key: key);
 
   @override
-  State<GiftOptionsBottomSheet> createState() => _GiftOptionsBottomSheetState();
+  State<ArchivedGiftOptionsBottomSheet> createState() => _ArchivedGiftOptionsBottomSheetState();
 }
 
-class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
-  void _showEditGiftScreen() {
-    Navigator.pop(context);
-    Navigator.pushNamed(context, '/createOrEditGift', arguments: CreateGiftScreenArguments(widget.giftBoxPosition));
-  }
-
-  void _showDeleteGiftDialog() async {
-    var giftBox = await Hive.openBox('gifts');
+class _ArchivedGiftOptionsBottomSheetState extends State<ArchivedGiftOptionsBottomSheet> {
+  void _showDeleteGiftDialog() {
     showDialog(
       context: context,
       builder: (context) {
@@ -48,11 +42,10 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
                 onPrimary: Colors.black87,
               ),
               onPressed: () => {
-                setState(() {
-                  giftBox.deleteAt(widget.giftBoxPosition);
-                }),
+                _deleteArchivedGift(),
                 Navigator.pop(context),
                 Navigator.pop(context),
+                // TODO hier weitermachen und auf Archiv Seite leiten
                 Navigator.popAndPushNamed(context, '/bottomNavBar'),
               },
               child: const Text('Ja'),
@@ -63,21 +56,15 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
     );
   }
 
-  void _archiveGift() async {
-    List<Contact> contacts = [];
+  void _deleteArchivedGift() async {
     var contactBox = await Hive.openBox('contacts');
-    var giftBox = await Hive.openBox('gifts');
-    Gift gift = giftBox.getAt(widget.giftBoxPosition);
-    for (int i = 0; i < contactBox.length; i++) {
-      contacts.add(contactBox.getAt(i));
-      if (contacts[i].contactname == gift.contact.contactname) {
-        // Hive unterstützt aktuell (Stand: 03.12.22) keine Liste von Objekten und kann diese nicht persistent speichern,
-        // deshalb wird hier eine String Datenstruktur verwendet um die archivierten Geschenkdaten zu speichern.
-        // Open Hive Issue on Github: https://github.com/hivedb/hive/issues/837
-        String archivedGiftsDataString = '${gift.giftname};${gift.event.eventname};${gift.event.eventDate};${gift.note};${gift.giftState}';
-        contacts[i].archivedGiftsData.add(archivedGiftsDataString);
-        contactBox.putAt(i, contacts[i]);
-        giftBox.deleteAt(widget.giftBoxPosition);
+    Contact currentContact = contactBox.getAt(widget.contactBoxPosition);
+    for (int i = 0; i < currentContact.archivedGiftsData.length; i++) {
+      if (widget.archivedGiftIndex == i) {
+        currentContact.archivedGiftsData.removeAt(i);
+        setState(() {
+          contactBox.putAt(widget.contactBoxPosition, currentContact);
+        });
         break;
       }
     }
@@ -107,26 +94,14 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
               padding: EdgeInsets.only(top: 16.0, bottom: 16.0, left: 16.0),
               child: SizedBox(
                 width: double.infinity,
-                child: Text('Geschenk:', style: TextStyle(fontSize: 16.0)),
+                child: Text('Archiviertes Geschenk:', style: TextStyle(fontSize: 16.0)),
               ),
-            ),
-            const Divider(height: 0, color: Colors.grey),
-            ListTile(
-              onTap: _showEditGiftScreen,
-              leading: const Icon(Icons.edit_rounded, color: Colors.cyanAccent),
-              title: const Text('Bearbeiten'),
             ),
             const Divider(height: 0, color: Colors.grey),
             ListTile(
               onTap: _showDeleteGiftDialog,
               leading: const Icon(Icons.delete_rounded, color: Colors.cyanAccent),
               title: const Text('Löschen'),
-            ),
-            const Divider(height: 0, color: Colors.grey),
-            ListTile(
-              onTap: _archiveGift,
-              leading: const Icon(Icons.archive_rounded, color: Colors.cyanAccent),
-              title: const Text('Archivieren'),
             ),
           ],
         ),

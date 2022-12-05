@@ -1,7 +1,9 @@
+import '../contact.dart';
+
 class ArchiveScreenArguments {
-  final String contactname;
+  final Contact contact;
 
   ArchiveScreenArguments(
-    this.contactname,
+    this.contact,
   );
 }
