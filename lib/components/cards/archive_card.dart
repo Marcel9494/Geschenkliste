@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:intl/intl.dart';
 
 import '../modal_bottom_sheets/archived_gift_options_bottom_sheet.dart';
+
 import '/models/archived_gift.dart';
 
 class ArchiveCard extends StatefulWidget {
@@ -53,7 +55,12 @@ class _ArchiveCardState extends State<ArchiveCard> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(20.0, 8.0, 0.0, 14.0),
-              child: Text(widget.archivedGift.eventDate),
+              child: Text(
+                '${widget.archivedGift.eventname} - ${DateFormat('dd.MM.yyyy').format(DateTime.parse(widget.archivedGift.eventDate))}',
+                style: const TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
             ),
           ],
         ),

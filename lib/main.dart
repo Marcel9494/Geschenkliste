@@ -47,6 +47,15 @@ class MyApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(
           color: Color(0xFF272727),
         ),
+        colorScheme: const ColorScheme.dark(
+          primary: Colors.cyanAccent,
+          onPrimary: Colors.black87,
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            primary: Colors.cyanAccent,
+          ),
+        ),
       ),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,

@@ -179,11 +179,21 @@ class _GiftCardState extends State<GiftCard> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 6.0, left: 20.0, bottom: 2.0),
-                child: Text('Für ${widget.gift.contact.contactname}'),
+                child: Text(
+                  'Für ${widget.gift.contact.contactname}',
+                  style: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 18.0, left: 20.0, bottom: 12.0),
-                child: Text(widget.gift.event.eventname),
+                child: Text(
+                  widget.gift.event.eventname,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

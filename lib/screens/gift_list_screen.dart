@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:geschenkliste/components/texts/centered_text.dart';
 import 'package:hive/hive.dart';
 
 import '/models/gift.dart';
+import '/models/enums/events.dart';
 
 import '/components/cards/day_card.dart';
 import '/components/cards/gift_card.dart';
+import '/components/texts/centered_text.dart';
 
 class GiftListScreen extends StatefulWidget {
   const GiftListScreen({Key? key}) : super(key: key);
@@ -15,9 +16,21 @@ class GiftListScreen extends StatefulWidget {
 }
 
 class _GiftListScreenState extends State<GiftListScreen> {
-  List<String> eventFilter = ['Alle', 'Geburtstag', 'Weihnachtsabend', 'Ostern'];
-  int selectedFilterIndex = 0;
+  List<String> eventFilter = [];
   late List<Gift> gifts = [];
+  int selectedFilterIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _getEventFilter();
+  }
+
+  void _getEventFilter() {
+    for (int i = 0; i < Events.values.length; i++) {
+      eventFilter.add(Events.values[i].filterName);
+    }
+  }
 
   Future<List<Gift>> _getGiftList() async {
     var giftBox = await Hive.openBox('gifts');
@@ -26,7 +39,7 @@ class _GiftListScreenState extends State<GiftListScreen> {
       gifts.add(giftBox.getAt(i));
       gifts[i].boxPosition = i;
       gifts[i].showInFilteredList = true;
-      if (eventFilter[selectedFilterIndex] != 'Alle') {
+      if (eventFilter[selectedFilterIndex] != Events.anyDate.filterName) {
         if (gifts[i].event.eventname != eventFilter[selectedFilterIndex]) {
           gifts[i].showInFilteredList = false;
         }

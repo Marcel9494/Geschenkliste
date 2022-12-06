@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
+import '../utils/date_formatter.dart';
 import '/components/buttons/save_button.dart';
 
 import '/models/contact.dart';
@@ -25,25 +26,26 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
   final TextEditingController _contactnameTextController = TextEditingController(text: '');
   final TextEditingController _birthdayTextController = TextEditingController(text: '');
   final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
+  final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
   DateTime? parsedBirthdayDate;
+  DateTime? formattedBirthday;
   String contactnameText = '';
   String contactnameErrorText = '';
   String birthdayDate = '';
   String birthdayDateErrorText = '';
-  late Contact contact;
+  late Contact loadedContact;
 
   Future<Contact> _getContactData() async {
     var contactBox = await Hive.openBox('contacts');
-    contact = await contactBox.getAt(widget.contactBoxPosition);
-    _contactnameTextController.text = contact.contactname;
-    final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
-    parsedBirthdayDate = contact.birthday;
-    String formattedBirthday = dateFormatter.format(contact.birthday!);
-    _birthdayTextController.text = formattedBirthday;
-    return contact;
+    loadedContact = await contactBox.getAt(widget.contactBoxPosition);
+    _contactnameTextController.text = loadedContact.contactname;
+    if (loadedContact.birthday != null) {
+      _birthdayTextController.text = dateFormatter.format(loadedContact.birthday!);
+    }
+    return loadedContact;
   }
 
-  void _createContact() async {
+  void _createOrUpdateContact() async {
     if (_contactnameTextController.text.isEmpty) {
       setState(() {
         contactnameErrorText = 'Name darf nicht leer sein.';
@@ -59,24 +61,20 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
       return;
     }
     var contactBox = await Hive.openBox('contacts');
-    for (int i = 0; i < contactBox.length; i++) {
-      Contact contact = contactBox.getAt(i);
-      if (contact.contactname == _contactnameTextController.text) {
-        setState(() {
-          contactnameErrorText = 'Name ist bereits vorhanden.';
-          _setButtonAnimation(false);
-        });
-        return;
-      }
+    if (_checkIfContactnameExists(contactBox)) {
+      setState(() {
+        contactnameErrorText = 'Name ist bereits vorhanden.';
+        _setButtonAnimation(false);
+      });
+      return;
     }
-    var contact = Contact()
-      ..contactname = _contactnameTextController.text
-      ..birthday = parsedBirthdayDate
-      ..archivedGiftsData = [];
+    if (_birthdayTextController.text.isNotEmpty) {
+      formattedBirthday = FormattingStringToYYYYMMDD(_birthdayTextController.text);
+    }
     if (widget.contactBoxPosition == -1) {
-      contactBox.add(contact);
+      _addNewContact();
     } else {
-      contactBox.putAt(widget.contactBoxPosition, contact);
+      _updateContact();
     }
     _setButtonAnimation(true);
     Timer(const Duration(milliseconds: 1200), () {
@@ -88,6 +86,37 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
         Navigator.pushNamed(context, '/bottomNavBar');
       }
     });
+  }
+
+  bool _checkIfContactnameExists(var contactBox) {
+    for (int i = 0; i < contactBox.length; i++) {
+      Contact contact = contactBox.getAt(i);
+      if (widget.contactBoxPosition != -1 && loadedContact.contactname == _contactnameTextController.text) {
+        break;
+      }
+      if (contact.contactname == _contactnameTextController.text) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void _addNewContact() async {
+    var contactBox = await Hive.openBox('contacts');
+    Contact newContact = Contact()
+      ..contactname = _contactnameTextController.text
+      ..birthday = formattedBirthday
+      ..archivedGiftsData = [];
+    contactBox.add(newContact);
+  }
+
+  void _updateContact() async {
+    var contactBox = await Hive.openBox('contacts');
+    Contact editedContact = Contact()
+      ..contactname = _contactnameTextController.text
+      ..birthday = formattedBirthday
+      ..archivedGiftsData = loadedContact.archivedGiftsData;
+    contactBox.putAt(widget.contactBoxPosition, editedContact);
   }
 
   void _clearBirthday() {
@@ -186,14 +215,12 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
                           firstDate: DateTime(1900),
                           lastDate: DateTime(2200),
                         );
-                        final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
-                        String formattedBirthday = dateFormatter.format(parsedBirthdayDate!);
-                        _birthdayTextController.text = formattedBirthday;
+                        _birthdayTextController.text = dateFormatter.format(parsedBirthdayDate!);
                       },
                     ),
                     SaveButton(
                       boxPosition: widget.contactBoxPosition,
-                      callback: _createContact,
+                      callback: _createOrUpdateContact,
                       buttonController: _btnController,
                     ),
                   ],

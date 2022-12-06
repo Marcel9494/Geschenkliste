@@ -71,7 +71,19 @@ class _ContactCardState extends State<ContactCard> {
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20.0, 8.0, 0.0, 14.0),
-                  child: widget.contact.birthday != null ? Text('${widget.contact.birthdayAge}. Geburtstag am $birthdayString') : const Text('Geburtstag: -'),
+                  child: widget.contact.birthday != null
+                      ? Text(
+                          '${widget.contact.birthdayAge}. Geburtstag am $birthdayString',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        )
+                      : const Text(
+                          'Geburtstag: -',
+                          style: TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
                 ),
               ],
             ),

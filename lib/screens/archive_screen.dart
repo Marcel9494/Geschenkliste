@@ -73,9 +73,9 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                     padding: const EdgeInsets.only(left: 20.0),
                     theme: TimelineThemeData(
                       nodePosition: 0,
-                      connectorTheme: const ConnectorThemeData(
+                      connectorTheme: ConnectorThemeData(
                         thickness: 3.0,
-                        color: Colors.grey,
+                        color: Colors.grey.shade800,
                       ),
                       indicatorTheme: const IndicatorThemeData(
                         size: 16.0,

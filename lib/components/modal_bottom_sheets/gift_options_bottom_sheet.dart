@@ -63,6 +63,42 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
     );
   }
 
+  void _showArchiveGiftDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Geschenk archivieren?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Nein',
+                style: TextStyle(
+                  color: Colors.cyanAccent,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.cyanAccent,
+                onPrimary: Colors.black87,
+              ),
+              child: const Text('Ja'),
+              onPressed: () => {
+                _archiveGift(),
+                Navigator.pop(context),
+                Navigator.popAndPushNamed(context, '/bottomNavBar'),
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _archiveGift() async {
     List<Contact> contacts = [];
     var contactBox = await Hive.openBox('contacts');
@@ -77,7 +113,9 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
         String archivedGiftsDataString = '${gift.giftname};${gift.event.eventname};${gift.event.eventDate};${gift.note};${gift.giftState}';
         contacts[i].archivedGiftsData.add(archivedGiftsDataString);
         contactBox.putAt(i, contacts[i]);
-        giftBox.deleteAt(widget.giftBoxPosition);
+        setState(() {
+          giftBox.deleteAt(widget.giftBoxPosition);
+        });
         break;
       }
     }
@@ -124,7 +162,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
             ),
             const Divider(height: 0, color: Colors.grey),
             ListTile(
-              onTap: _archiveGift,
+              onTap: _showArchiveGiftDialog,
               leading: const Icon(Icons.archive_rounded, color: Colors.cyanAccent),
               title: const Text('Archivieren'),
             ),
