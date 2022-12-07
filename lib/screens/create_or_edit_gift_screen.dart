@@ -115,7 +115,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   void _createGift() async {
     int selectedContactIndex = -1;
     int selectedEventIndex = -1;
-    if (_giftnameTextController.text.isEmpty) {
+    if (_giftnameTextController.text.trim().isEmpty) {
       setState(() {
         giftnameErrorText = 'Geschenkname / Idee darf nicht leer sein.';
         _setButtonAnimation(false);
@@ -139,8 +139,8 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     if (_eventDateTextController.text.isNotEmpty) {
       events[selectedEventIndex].eventDate = FormattingStringToYYYYMMDD(_eventDateTextController.text);
     }
-    var gift = Gift()
-      ..giftname = _giftnameTextController.text
+    Gift gift = Gift()
+      ..giftname = _giftnameTextController.text.trim()
       ..contact = contacts[selectedContactIndex]
       ..giftState = selectedGiftState
       ..note = _notesTextController.text
@@ -206,6 +206,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                       TextFormField(
                         controller: _giftnameTextController,
                         textAlignVertical: TextAlignVertical.center,
+                        maxLength: 35,
                         decoration: InputDecoration(
                           hintText: 'Geschenkname / Idee',
                           hintStyle: const TextStyle(color: Colors.white),
@@ -359,6 +360,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                       TextFormField(
                         controller: _notesTextController,
                         textAlignVertical: TextAlignVertical.center,
+                        maxLength: 300,
                         decoration: const InputDecoration(
                           hintText: 'Notizen',
                           hintStyle: TextStyle(color: Colors.white),

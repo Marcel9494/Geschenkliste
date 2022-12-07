@@ -5,10 +5,13 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-import '../utils/date_formatter.dart';
+import '../models/enums/events.dart';
 import '/components/buttons/save_button.dart';
 
+import '/utils/date_formatter.dart';
+
 import '/models/contact.dart';
+import '/models/gift.dart';
 
 class CreateOrEditContactScreen extends StatefulWidget {
   final int contactBoxPosition;
@@ -46,7 +49,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
   }
 
   void _createOrUpdateContact() async {
-    if (_contactnameTextController.text.isEmpty) {
+    if (_contactnameTextController.text.trim().isEmpty) {
       setState(() {
         contactnameErrorText = 'Name darf nicht leer sein.';
         _setButtonAnimation(false);
@@ -75,6 +78,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
       _addNewContact();
     } else {
       _updateContact();
+      _updateGiftsFromContact();
     }
     _setButtonAnimation(true);
     Timer(const Duration(milliseconds: 1200), () {
@@ -91,10 +95,10 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
   bool _checkIfContactnameExists(var contactBox) {
     for (int i = 0; i < contactBox.length; i++) {
       Contact contact = contactBox.getAt(i);
-      if (widget.contactBoxPosition != -1 && loadedContact.contactname == _contactnameTextController.text) {
+      if (widget.contactBoxPosition != -1 && loadedContact.contactname == _contactnameTextController.text.trim()) {
         break;
       }
-      if (contact.contactname == _contactnameTextController.text) {
+      if (contact.contactname == _contactnameTextController.text.trim()) {
         return true;
       }
     }
@@ -104,7 +108,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
   void _addNewContact() async {
     var contactBox = await Hive.openBox('contacts');
     Contact newContact = Contact()
-      ..contactname = _contactnameTextController.text
+      ..contactname = _contactnameTextController.text.trim()
       ..birthday = formattedBirthday
       ..archivedGiftsData = [];
     contactBox.add(newContact);
@@ -112,11 +116,34 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
 
   void _updateContact() async {
     var contactBox = await Hive.openBox('contacts');
-    Contact editedContact = Contact()
-      ..contactname = _contactnameTextController.text
+    Contact updatedContact = Contact()
+      ..contactname = _contactnameTextController.text.trim()
       ..birthday = formattedBirthday
       ..archivedGiftsData = loadedContact.archivedGiftsData;
-    contactBox.putAt(widget.contactBoxPosition, editedContact);
+    contactBox.putAt(widget.contactBoxPosition, updatedContact);
+  }
+
+  void _updateGiftsFromContact() async {
+    var giftBox = await Hive.openBox('gifts');
+    for (int i = 0; i < giftBox.length; i++) {
+      Gift gift = giftBox.getAt(i);
+      // TODO in gift Klasse auslagern als eigene Funktion?
+      // TODO hier weitermachen was soll passieren wenn Kontakt gelöscht wird, aber es noch Geschenke für diesen Kontakt gibt?
+      if (gift.contact.contactname == loadedContact.contactname || (gift.contact.contactname == loadedContact.contactname && gift.contact.birthday == loadedContact.birthday)) {
+        gift.contact.contactname = _contactnameTextController.text.trim();
+        gift.contact.birthday = formattedBirthday;
+        if (gift.event.eventname == Events.birthday.name) {
+          gift.event.eventDate = formattedBirthday;
+        }
+        Gift updatedGift = Gift()
+          ..giftname = gift.giftname
+          ..contact = gift.contact
+          ..giftState = gift.giftState
+          ..note = gift.note
+          ..event = gift.event;
+        giftBox.putAt(i, updatedGift);
+      }
+    }
   }
 
   void _clearBirthday() {

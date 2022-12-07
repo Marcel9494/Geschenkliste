@@ -74,12 +74,12 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                     theme: TimelineThemeData(
                       nodePosition: 0,
                       connectorTheme: ConnectorThemeData(
-                        thickness: 3.0,
+                        thickness: 2.0,
                         color: Colors.grey.shade800,
                       ),
-                      indicatorTheme: const IndicatorThemeData(
+                      indicatorTheme: IndicatorThemeData(
                         size: 16.0,
-                        color: Colors.cyanAccent,
+                        color: Colors.cyanAccent.shade400,
                       ),
                     ),
                     builder: TimelineTileBuilder.fromStyle(

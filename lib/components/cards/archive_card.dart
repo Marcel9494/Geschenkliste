@@ -62,6 +62,15 @@ class _ArchiveCardState extends State<ArchiveCard> {
                 ),
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20.0, 8.0, 0.0, 14.0),
+              child: Text(
+                widget.archivedGift.note.isEmpty ? 'Notiz: - ' : 'Notiz: ${widget.archivedGift.note}',
+                style: const TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+            ),
           ],
         ),
       ),

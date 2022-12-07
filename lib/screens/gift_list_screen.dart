@@ -89,7 +89,7 @@ class _GiftListScreenState extends State<GiftListScreen> {
                       style: TextStyle(color: selectedFilterIndex == index ? Colors.black87 : Colors.white),
                     ),
                     selected: selectedFilterIndex == index,
-                    selectedColor: Colors.cyanAccent,
+                    selectedColor: Colors.cyanAccent.shade400,
                     onSelected: (bool selected) {
                       setState(() {
                         if (selected) {
