@@ -54,6 +54,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   String contactnameErrorText = '';
   String eventDateErrorText = '';
   DateTime? parsedEventDate;
+  bool isContactEdited = false;
   late Gift gift;
 
   @override
@@ -182,7 +183,11 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
         title: widget.giftBoxPosition == -1 ? const Text('Geschenk erstellen') : const Text('Geschenk bearbeiten'),
       ),
       body: FutureBuilder<Gift>(
-        future: widget.giftBoxPosition == -1 ? null : _getGiftData(),
+        future: widget.giftBoxPosition == -1
+            ? null
+            : isContactEdited
+                ? null
+                : _getGiftData(),
         builder: (BuildContext context, AsyncSnapshot<Gift> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
@@ -239,6 +244,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                               onChanged: (String? contact) {
                                 setState(() {
                                   selectedContact = contact!;
+                                  isContactEdited = true;
                                   if (selectedEvent == Events.birthday.name) {
                                     _setBirthdayDateFromContact();
                                   }
@@ -275,6 +281,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                         onChanged: (String? newGiftState) {
                           setState(() {
                             selectedGiftState = newGiftState!;
+                            isContactEdited = true;
                           });
                         },
                         items: giftStateList.map<DropdownMenuItem<String>>((String event) {
@@ -301,6 +308,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                         onChanged: (String? newEvent) {
                           setState(() {
                             selectedEvent = newEvent!;
+                            isContactEdited = true;
                             if (selectedEvent == Events.christmas.name) {
                               _eventDateTextController.text = '24.12.${DateTime.now().year}';
                             } else if (selectedEvent == Events.nicholas.name) {
@@ -355,6 +363,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                             lastDate: DateTime(2200),
                           );
                           _eventDateTextController.text = dateFormatter.format(parsedEventDate!);
+                          isContactEdited = true;
                         },
                       ),
                       TextFormField(
