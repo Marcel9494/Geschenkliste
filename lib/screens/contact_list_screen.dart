@@ -17,6 +17,7 @@ class ContactListScreen extends StatefulWidget {
 }
 
 class _ContactListScreenState extends State<ContactListScreen> {
+  final TextEditingController _searchedContactnameTextController = TextEditingController(text: '');
   late List<Contact> contacts = [];
   late DateFormat dateFormatter;
 
@@ -26,15 +27,20 @@ class _ContactListScreenState extends State<ContactListScreen> {
     dateFormatter = DateFormat('LLLL', 'de');
   }
 
-  Future<List<Contact>> _getContactList() async {
+  Future<List<Contact>> _getContactList(String searchedContactname) async {
+    int contactNumber = 0;
     var contactBox = await Hive.openBox('contacts');
     contacts.clear();
     for (int i = 0; i < contactBox.length; i++) {
-      contacts.add(contactBox.getAt(i));
-      contacts[i].remainingDays = _getRemainingDaysToEvent(i);
-      contacts[i].nextBirthday = _getNextBirthday(i);
-      contacts[i].birthdayAge = _getBirthdayAge(i);
-      contacts[i].boxPosition = i;
+      Contact tempContact = contactBox.getAt(i);
+      if (tempContact.contactname.contains(searchedContactname)) {
+        contacts.add(contactBox.getAt(i));
+        contacts[contactNumber].remainingDays = _getRemainingDaysToEvent(contactNumber);
+        contacts[contactNumber].nextBirthday = _getNextBirthday(contactNumber);
+        contacts[contactNumber].birthdayAge = _getBirthdayAge(contactNumber);
+        contacts[contactNumber].boxPosition = contactNumber;
+        contactNumber++;
+      }
     }
     contacts.sort((first, second) => first.remainingDays.compareTo(second.remainingDays));
     return contacts;
@@ -80,6 +86,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Kontakte'),
+        // TODO backgroundColor: const Color(0xFF171717),
         actions: [
           IconButton(
             onPressed: () => Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1)),
@@ -98,8 +105,26 @@ class _ContactListScreenState extends State<ContactListScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          TextFormField(
+            controller: _searchedContactnameTextController,
+            onChanged: (String searchedContactname) {
+              setState(() {
+                _getContactList(searchedContactname);
+              });
+            },
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: const Color(0xff302360),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide.none,
+              ),
+              hintText: 'Suchen...',
+              prefixIcon: const Icon(Icons.search_rounded),
+            ),
+          ),
           FutureBuilder<List<Contact>>(
-            future: _getContactList(),
+            future: _getContactList(_searchedContactnameTextController.text),
             builder: (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
@@ -114,7 +139,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
                       return Expanded(
                         child: RefreshIndicator(
                           onRefresh: () {
-                            var contacts = _getContactList();
+                            var contacts = _getContactList(_searchedContactnameTextController.text);
                             setState(() {});
                             return contacts;
                           },
