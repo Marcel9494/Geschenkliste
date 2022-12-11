@@ -160,101 +160,110 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
     }
   }
 
+  Future<bool> goBack() async {
+    FocusScope.of(context).requestFocus(FocusNode());
+    Navigator.pop(context);
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: widget.contactBoxPosition == -1 ? const Text('Kontakt erstellen') : const Text('Kontakt bearbeiten'),
-      ),
-      body: FutureBuilder<Contact>(
-        future: widget.contactBoxPosition == -1 ? null : _getContactData(),
-        builder: (BuildContext context, AsyncSnapshot<Contact> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return const Center(child: CircularProgressIndicator(color: Colors.cyanAccent));
-            default:
-              if (snapshot.hasError) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Text(
-                      'Kontakt konnte nicht geladen werden.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16.0),
-                    ),
-                  ),
-                );
-              } else {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormField(
-                      controller: _contactnameTextController,
-                      maxLength: 30,
-                      decoration: InputDecoration(
-                        hintText: 'Name',
-                        prefixIcon: const IconTheme(
-                          data: IconThemeData(color: Colors.cyanAccent),
-                          child: Icon(Icons.person_rounded),
-                        ),
-                        prefixIconConstraints: const BoxConstraints(
-                          minWidth: 42.0,
-                          maxWidth: 42.0,
-                        ),
-                        counterText: '',
-                        errorText: contactnameErrorText.isEmpty ? null : contactnameErrorText,
+    return WillPopScope(
+      onWillPop: goBack,
+      child: Scaffold(
+        appBar: AppBar(
+          title: widget.contactBoxPosition == -1 ? const Text('Kontakt erstellen') : const Text('Kontakt bearbeiten'),
+        ),
+        body: FutureBuilder<Contact>(
+          future: widget.contactBoxPosition == -1 ? null : _getContactData(),
+          builder: (BuildContext context, AsyncSnapshot<Contact> snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return const Center(child: CircularProgressIndicator(color: Colors.cyanAccent));
+              default:
+                if (snapshot.hasError) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Text(
+                        'Kontakt konnte nicht geladen werden.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16.0),
                       ),
                     ),
-                    TextFormField(
-                      controller: _birthdayTextController,
-                      maxLength: 10,
-                      readOnly: true,
-                      textAlignVertical: TextAlignVertical.center,
-                      decoration: InputDecoration(
-                        hintText: 'Geburtstag',
-                        prefixIcon: const IconTheme(
-                          data: IconThemeData(color: Colors.cyanAccent),
-                          child: Icon(Icons.edit_calendar_rounded),
+                  );
+                } else {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: _contactnameTextController,
+                        maxLength: 30,
+                        decoration: InputDecoration(
+                          hintText: 'Name',
+                          prefixIcon: const IconTheme(
+                            data: IconThemeData(color: Colors.cyanAccent),
+                            child: Icon(Icons.person_rounded),
+                          ),
+                          prefixIconConstraints: const BoxConstraints(
+                            minWidth: 42.0,
+                            maxWidth: 42.0,
+                          ),
+                          counterText: '',
+                          errorText: contactnameErrorText.isEmpty ? null : contactnameErrorText,
                         ),
-                        prefixIconConstraints: const BoxConstraints(
-                          minWidth: 42.0,
-                          maxWidth: 42.0,
-                        ),
-                        suffixIcon: _birthdayTextController.text.isEmpty
-                            ? null
-                            : IconTheme(
-                                data: const IconThemeData(color: Colors.cyanAccent),
-                                child: IconButton(
-                                  onPressed: _clearBirthday,
-                                  icon: const Icon(Icons.highlight_remove_rounded),
+                      ),
+                      TextFormField(
+                        controller: _birthdayTextController,
+                        maxLength: 10,
+                        readOnly: true,
+                        textAlignVertical: TextAlignVertical.center,
+                        decoration: InputDecoration(
+                          hintText: 'Geburtstag',
+                          prefixIcon: const IconTheme(
+                            data: IconThemeData(color: Colors.cyanAccent),
+                            child: Icon(Icons.edit_calendar_rounded),
+                          ),
+                          prefixIconConstraints: const BoxConstraints(
+                            minWidth: 42.0,
+                            maxWidth: 42.0,
+                          ),
+                          suffixIcon: _birthdayTextController.text.isEmpty
+                              ? null
+                              : IconTheme(
+                                  data: const IconThemeData(color: Colors.cyanAccent),
+                                  child: IconButton(
+                                    onPressed: _clearBirthday,
+                                    icon: const Icon(Icons.highlight_remove_rounded),
+                                  ),
                                 ),
-                              ),
-                        counterText: '',
-                        errorText: birthdayDateErrorText.isEmpty ? null : birthdayDateErrorText,
+                          counterText: '',
+                          errorText: birthdayDateErrorText.isEmpty ? null : birthdayDateErrorText,
+                        ),
+                        onTap: () async {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          parsedBirthdayDate = await showDatePicker(
+                            context: context,
+                            locale: const Locale('de', 'DE'),
+                            initialDate: DateTime(2000),
+                            initialDatePickerMode: DatePickerMode.year,
+                            firstDate: DateTime(1900),
+                            lastDate: DateTime(2200),
+                          );
+                          _birthdayTextController.text = dateFormatter.format(parsedBirthdayDate!);
+                        },
                       ),
-                      onTap: () async {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                        parsedBirthdayDate = await showDatePicker(
-                          context: context,
-                          locale: const Locale('de', 'DE'),
-                          initialDate: DateTime(2000),
-                          initialDatePickerMode: DatePickerMode.year,
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime(2200),
-                        );
-                        _birthdayTextController.text = dateFormatter.format(parsedBirthdayDate!);
-                      },
-                    ),
-                    SaveButton(
-                      boxPosition: widget.contactBoxPosition,
-                      callback: _createOrUpdateContact,
-                      buttonController: _btnController,
-                    ),
-                  ],
-                );
-              }
-          }
-        },
+                      SaveButton(
+                        boxPosition: widget.contactBoxPosition,
+                        callback: _createOrUpdateContact,
+                        buttonController: _btnController,
+                      ),
+                    ],
+                  );
+                }
+            }
+          },
+        ),
       ),
     );
   }

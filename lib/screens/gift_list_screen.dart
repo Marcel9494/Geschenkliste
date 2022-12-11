@@ -52,11 +52,43 @@ class _GiftListScreenState extends State<GiftListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Geschenke'),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 12.0),
-            child: Icon(Icons.settings_rounded),
+        elevation: 0.0,
+        title: SizedBox(
+          height: 38.0,
+          // TODO hier weitermachen und Suche für Geschenke implementieren
+          child: TextFormField(
+            //controller: _searchedContactnameTextController,
+            onChanged: (String searchedContactname) {
+              setState(() {
+                //_getContactList(searchedContactname);
+              });
+            },
+            decoration: InputDecoration(
+              filled: true,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+              fillColor: const Color(0x0fffffff),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide.none,
+              ),
+              hintText: 'Suchen...',
+              prefixIcon: const Icon(Icons.search_rounded, size: 24.0),
+              /*suffixIcon: _searchedContactnameTextController.text.isNotEmpty
+                  ? IconButton(
+                onPressed: () => setState(() {
+                  _clearSearchField();
+                }),
+                icon: const Icon(Icons.cancel_outlined),
+              )
+                  : null,*/
+            ),
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () => {},
+            icon: const Icon(Icons.settings_rounded),
           ),
         ],
       ),

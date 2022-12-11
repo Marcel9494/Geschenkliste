@@ -33,7 +33,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
     contacts.clear();
     for (int i = 0; i < contactBox.length; i++) {
       Contact tempContact = contactBox.getAt(i);
-      if (tempContact.contactname.contains(searchedContactname)) {
+      if (tempContact.contactname.toLowerCase().contains(searchedContactname.toLowerCase())) {
         contacts.add(contactBox.getAt(i));
         contacts[contactNumber].remainingDays = _getRemainingDaysToEvent(contactNumber);
         contacts[contactNumber].nextBirthday = _getNextBirthday(contactNumber);
@@ -47,12 +47,12 @@ class _ContactListScreenState extends State<ContactListScreen> {
   }
 
   int _getRemainingDaysToEvent(final int index) {
-    if (contacts[index].birthday != null) {
-      DateTime eventDate = DateTime(DateTime.now().year + 1, contacts[index].birthday!.month, contacts[index].birthday!.day);
-      DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-      return (eventDate.difference(today).inHours / 24).round() % 365; // TODO Schaltjahre mit berücksichtigen (366 Tage)
+    if (contacts[index].birthday == null) {
+      return 9999;
     }
-    return 9999;
+    DateTime eventDate = DateTime(DateTime.now().year + 1, contacts[index].birthday!.month, contacts[index].birthday!.day);
+    DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    return (eventDate.difference(today).inHours / 24).round() % 365; // TODO Schaltjahre mit berücksichtigen (366 Tage)
   }
 
   int _getBirthdayAge(final int index) {
@@ -81,12 +81,48 @@ class _ContactListScreenState extends State<ContactListScreen> {
     return DateTime(DateTime.now().year + 1, contacts[index].birthday!.month, contacts[index].birthday!.day);
   }
 
+  void _clearSearchField() {
+    _searchedContactnameTextController.text = '';
+    _getContactList(_searchedContactnameTextController.text);
+    FocusScope.of(context).requestFocus(FocusNode());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kontakte'),
-        // TODO backgroundColor: const Color(0xFF171717),
+        elevation: 0.0,
+        title: SizedBox(
+          height: 38.0,
+          child: TextFormField(
+            controller: _searchedContactnameTextController,
+            onChanged: (String searchedContactname) {
+              setState(() {
+                _getContactList(searchedContactname);
+              });
+            },
+            decoration: InputDecoration(
+              filled: true,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+              fillColor: const Color(0x0fffffff),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide.none,
+              ),
+              hintText: 'Suchen...',
+              prefixIcon: const Icon(Icons.search_rounded, size: 24.0),
+              suffixIcon: _searchedContactnameTextController.text.isNotEmpty
+                  ? IconButton(
+                      onPressed: () => setState(() {
+                        _clearSearchField();
+                      }),
+                      icon: const Icon(Icons.cancel_outlined, size: 20.0),
+                    )
+                  : null,
+            ),
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () => Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1)),
@@ -105,24 +141,6 @@ class _ContactListScreenState extends State<ContactListScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextFormField(
-            controller: _searchedContactnameTextController,
-            onChanged: (String searchedContactname) {
-              setState(() {
-                _getContactList(searchedContactname);
-              });
-            },
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0xff302360),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide.none,
-              ),
-              hintText: 'Suchen...',
-              prefixIcon: const Icon(Icons.search_rounded),
-            ),
-          ),
           FutureBuilder<List<Contact>>(
             future: _getContactList(_searchedContactnameTextController.text),
             builder: (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) {
