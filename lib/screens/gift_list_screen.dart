@@ -16,6 +16,7 @@ class GiftListScreen extends StatefulWidget {
 }
 
 class _GiftListScreenState extends State<GiftListScreen> {
+  final TextEditingController _searchTermTextController = TextEditingController(text: '');
   List<String> eventFilter = [];
   late List<Gift> gifts = [];
   int selectedFilterIndex = 0;
@@ -32,20 +33,31 @@ class _GiftListScreenState extends State<GiftListScreen> {
     }
   }
 
-  Future<List<Gift>> _getGiftList() async {
+  Future<List<Gift>> _getGiftList(String searchTerm) async {
+    int giftNumber = 0;
     var giftBox = await Hive.openBox('gifts');
     gifts.clear();
     for (int i = 0; i < giftBox.length; i++) {
-      gifts.add(giftBox.getAt(i));
-      gifts[i].boxPosition = i;
-      gifts[i].showInFilteredList = true;
-      if (eventFilter[selectedFilterIndex] != Events.anyDate.filterName) {
-        if (gifts[i].event.eventname != eventFilter[selectedFilterIndex]) {
-          gifts[i].showInFilteredList = false;
+      Gift tempGift = giftBox.getAt(i);
+      if (tempGift.contact.contactname.toLowerCase().contains(searchTerm.toLowerCase()) || tempGift.giftname.toLowerCase().contains(searchTerm.toLowerCase())) {
+        gifts.add(giftBox.getAt(i));
+        gifts[giftNumber].boxPosition = giftNumber;
+        gifts[giftNumber].showInFilteredList = true;
+        if (eventFilter[selectedFilterIndex] != Events.anyDate.filterName) {
+          if (gifts[giftNumber].event.eventname != eventFilter[selectedFilterIndex]) {
+            gifts[giftNumber].showInFilteredList = false;
+          }
         }
+        giftNumber++;
       }
     }
     return gifts;
+  }
+
+  void _clearSearchField() {
+    _searchTermTextController.text = '';
+    _getGiftList(_searchTermTextController.text);
+    FocusScope.of(context).requestFocus(FocusNode());
   }
 
   @override
@@ -55,12 +67,11 @@ class _GiftListScreenState extends State<GiftListScreen> {
         elevation: 0.0,
         title: SizedBox(
           height: 38.0,
-          // TODO hier weitermachen und Suche für Geschenke implementieren
           child: TextFormField(
-            //controller: _searchedContactnameTextController,
+            controller: _searchTermTextController,
             onChanged: (String searchedContactname) {
               setState(() {
-                //_getContactList(searchedContactname);
+                _getGiftList(searchedContactname);
               });
             },
             decoration: InputDecoration(
@@ -74,20 +85,20 @@ class _GiftListScreenState extends State<GiftListScreen> {
               ),
               hintText: 'Suchen...',
               prefixIcon: const Icon(Icons.search_rounded, size: 24.0),
-              /*suffixIcon: _searchedContactnameTextController.text.isNotEmpty
+              suffixIcon: _searchTermTextController.text.isNotEmpty
                   ? IconButton(
-                onPressed: () => setState(() {
-                  _clearSearchField();
-                }),
-                icon: const Icon(Icons.cancel_outlined),
-              )
-                  : null,*/
+                      onPressed: () => setState(() {
+                        _clearSearchField();
+                      }),
+                      icon: const Icon(Icons.cancel_outlined),
+                    )
+                  : null,
             ),
           ),
         ),
         actions: [
           IconButton(
-            onPressed: () => {},
+            onPressed: () => Navigator.pushNamed(context, '/settings'),
             icon: const Icon(Icons.settings_rounded),
           ),
         ],
@@ -147,7 +158,7 @@ class _GiftListScreenState extends State<GiftListScreen> {
             ],
           ),
           FutureBuilder<List<Gift>>(
-            future: _getGiftList(),
+            future: _getGiftList(_searchTermTextController.text),
             builder: (BuildContext context, AsyncSnapshot<List<Gift>> snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:

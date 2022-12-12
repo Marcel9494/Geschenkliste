@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:geschenkliste/models/screen_arguments/create_contact_screen_arguments.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
-import '../components/texts/centered_text.dart';
 import '/models/contact.dart';
+import '/models/screen_arguments/create_contact_screen_arguments.dart';
 
 import '/components/cards/day_card.dart';
 import '/components/cards/contact_card.dart';
+import '/components/texts/centered_text.dart';
 
 class ContactListScreen extends StatefulWidget {
   const ContactListScreen({Key? key}) : super(key: key);
@@ -125,14 +125,20 @@ class _ContactListScreenState extends State<ContactListScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () => Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1)),
+            onPressed: () => {
+              Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1)),
+              FocusScope.of(context).unfocus(),
+            },
             icon: const Icon(
               Icons.person_add_rounded,
               size: 26.0,
             ),
           ),
           IconButton(
-            onPressed: () => {},
+            onPressed: () => {
+              Navigator.pushNamed(context, '/settings'),
+              FocusScope.of(context).unfocus(),
+            },
             icon: const Icon(Icons.settings_rounded),
           ),
         ],
