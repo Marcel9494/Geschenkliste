@@ -112,7 +112,7 @@ class _GiftListScreenState extends State<GiftListScreen> {
                 padding: EdgeInsets.fromLTRB(12.0, 12.0, 0.0, 0.0),
                 child: Text(
                   'Events:',
-                  style: TextStyle(fontSize: 16.0),
+                  style: TextStyle(fontSize: 21.0, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -152,7 +152,7 @@ class _GiftListScreenState extends State<GiftListScreen> {
                 padding: EdgeInsets.fromLTRB(12.0, 4.0, 0.0, 8.0),
                 child: Text(
                   'Geschenkliste:',
-                  style: TextStyle(fontSize: 16.0),
+                  style: TextStyle(fontSize: 21.0, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -182,14 +182,7 @@ class _GiftListScreenState extends State<GiftListScreen> {
                           itemCount: gifts.length,
                           physics: const AlwaysScrollableScrollPhysics(),
                           itemBuilder: (BuildContext context, int index) {
-                            return gifts[index].showInFilteredList
-                                ? Row(
-                                    children: [
-                                      const DayCard(days: 1),
-                                      GiftCard(gift: gifts[index]),
-                                    ],
-                                  )
-                                : const SizedBox.shrink();
+                            return gifts[index].showInFilteredList ? GiftCard(gift: gifts[index]) : const SizedBox.shrink();
                           },
                         ),
                       );
