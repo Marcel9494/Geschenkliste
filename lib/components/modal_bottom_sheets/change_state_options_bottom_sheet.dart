@@ -9,12 +9,12 @@ typedef void StringCallback(String val);
 
 class ChangeStateOptionsBottomSheet extends StatefulWidget {
   final int giftBoxPosition;
-  final StringCallback callback;
+  final StringCallback updatedGiftStateCallback;
 
   const ChangeStateOptionsBottomSheet({
     Key? key,
     required this.giftBoxPosition,
-    required this.callback,
+    required this.updatedGiftStateCallback,
   }) : super(key: key);
 
   @override
@@ -30,7 +30,7 @@ class _ChangeStateOptionsBottomSheetState extends State<ChangeStateOptionsBottom
         isGiftStateSelected[i] = i == giftStateIndex;
         if (i == giftStateIndex) {
           updateGiftState(GiftStatus.values[i].name);
-          widget.callback(GiftStatus.values[i].name);
+          widget.updatedGiftStateCallback(GiftStatus.values[i].name);
         }
       }
       if (isGiftStateSelected[3]) {
@@ -81,12 +81,27 @@ class _ChangeStateOptionsBottomSheetState extends State<ChangeStateOptionsBottom
               onPressed: () => {
                 _archiveGift(),
                 Navigator.pop(context),
+                Navigator.pop(context),
                 Navigator.popAndPushNamed(context, '/bottomNavBar'),
+                _showArchievedSnackbar(),
               },
             ),
           ],
         );
       },
+    );
+  }
+
+  void _showArchievedSnackbar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Geschenk wurde archiviert',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.cyanAccent),
+        ),
+        backgroundColor: Color(0x0fffffff),
+      ),
     );
   }
 

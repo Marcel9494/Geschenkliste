@@ -23,8 +23,8 @@ class GiftCard extends StatefulWidget {
 
 class _GiftCardState extends State<GiftCard> {
   List<bool> isGiftStateSelected = [false, false, false, false];
-  String _string = '';
-  set string(String value) => setState(() => _string = value);
+  //String _updatedGiftState = '';
+  set updatedGiftState(String value) => setState(() => widget.gift.giftState = value);
 
   @override
   initState() {
@@ -43,6 +43,17 @@ class _GiftCardState extends State<GiftCard> {
       }
     }
     setState(() {});
+  }
+
+  Icon getIcon() {
+    if (widget.gift.giftState == 'Idee') {
+      return const Icon(Icons.tips_and_updates_rounded, size: 12.0);
+    } else if (widget.gift.giftState == 'Gekauft') {
+      return const Icon(Icons.shopping_cart, size: 12.0);
+    } else if (widget.gift.giftState == 'Verpackt') {
+      return const Icon(Icons.card_giftcard_rounded, size: 12.0);
+    }
+    return const Icon(Icons.volunteer_activism_rounded, size: 12.0);
   }
 
   @override
@@ -73,18 +84,28 @@ class _GiftCardState extends State<GiftCard> {
                     labelPadding: const EdgeInsets.symmetric(vertical: -3.0, horizontal: 5.0),
                     avatar: CircleAvatar(
                       backgroundColor: Colors.grey.shade800,
-                      child: const Icon(Icons.tips_and_updates_rounded, size: 13.0),
+                      child: getIcon(),
                     ),
                     label: SizedBox(
                       width: 60.0,
                       child: Center(
-                        child: Text(_string == '' ? widget.gift.giftState : _string),
+                        child: Text(
+                          widget.gift.giftState,
+                          style: const TextStyle(
+                            color: Colors.cyanAccent,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                   onTap: () => showCupertinoModalBottomSheet(
                     context: context,
-                    builder: (context) => ChangeStateOptionsBottomSheet(giftBoxPosition: widget.gift.boxPosition, callback: (val) => setState(() => _string = val)),
+                    builder: (context) => ChangeStateOptionsBottomSheet(
+                      giftBoxPosition: widget.gift.boxPosition,
+                      updatedGiftStateCallback: (newGiftSate) => setState(
+                        () => widget.gift.giftState = newGiftSate,
+                      ),
+                    ),
                   ),
                 ),
                 IconButton(
