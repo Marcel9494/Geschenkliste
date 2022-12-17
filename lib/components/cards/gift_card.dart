@@ -47,13 +47,13 @@ class _GiftCardState extends State<GiftCard> {
 
   Icon getIcon() {
     if (widget.gift.giftState == 'Idee') {
-      return const Icon(Icons.tips_and_updates_rounded, size: 12.0);
+      return const Icon(Icons.tips_and_updates_rounded, size: 12.0, color: Colors.cyanAccent);
     } else if (widget.gift.giftState == 'Gekauft') {
-      return const Icon(Icons.shopping_cart, size: 12.0);
+      return const Icon(Icons.shopping_cart, size: 12.0, color: Colors.cyanAccent);
     } else if (widget.gift.giftState == 'Verpackt') {
-      return const Icon(Icons.card_giftcard_rounded, size: 12.0);
+      return const Icon(Icons.card_giftcard_rounded, size: 12.0, color: Colors.cyanAccent);
     }
-    return const Icon(Icons.volunteer_activism_rounded, size: 12.0);
+    return const Icon(Icons.volunteer_activism_rounded, size: 12.0, color: Colors.cyanAccent);
   }
 
   @override
@@ -62,6 +62,9 @@ class _GiftCardState extends State<GiftCard> {
       padding: const EdgeInsets.only(left: 6.0),
       child: Card(
         color: const Color(0x0fffffff),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -69,9 +72,11 @@ class _GiftCardState extends State<GiftCard> {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
+                    padding: const EdgeInsets.fromLTRB(20.0, 0.0, 10.0, 0.0),
                     child: Text(
-                      widget.gift.giftname,
+                      'Für ${widget.gift.contact.contactname}',
+                      overflow: TextOverflow.fade,
+                      softWrap: false,
                       style: const TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.bold,
@@ -87,7 +92,7 @@ class _GiftCardState extends State<GiftCard> {
                       child: getIcon(),
                     ),
                     label: SizedBox(
-                      width: 60.0,
+                      width: 70.0,
                       child: Center(
                         child: Text(
                           widget.gift.giftState,
@@ -118,20 +123,13 @@ class _GiftCardState extends State<GiftCard> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 6.0, left: 20.0, bottom: 2.0),
+              padding: const EdgeInsets.only(top: 8.0, left: 20.0),
               child: Text(
-                'Für ${widget.gift.contact.contactname}',
-                style: const TextStyle(
-                  color: Colors.grey,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 18.0, left: 20.0, bottom: 12.0),
-              child: Text(
-                '${widget.gift.event.eventname} • ${widget.gift.event.eventDate?.day}.${widget.gift.event.eventDate?.month}.${widget.gift.event.eventDate?.year} • In X Tagen',
-                style: const TextStyle(
-                  color: Colors.grey,
+                widget.gift.giftname,
+                style: TextStyle(
+                  color: Colors.grey.shade300,
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -144,53 +142,16 @@ class _GiftCardState extends State<GiftCard> {
                 ),
               ),
             ),
-            /*Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ToggleButtons(
-                  onPressed: (int index) {
-                    setState(() {
-                      for (int i = 0; i < isGiftStateSelected.length; i++) {
-                        isGiftStateSelected[i] = i == index;
-                        if (i == index) {
-                          updateGiftState(GiftStatus.values[i].name);
-                        }
-                      }
-                      if (isGiftStateSelected[3]) {
-                        _showArchiveGiftDialog();
-                      }
-                    });
-                  },
-                  isSelected: isGiftStateSelected,
-                  selectedColor: Colors.cyanAccent,
-                  selectedBorderColor: Colors.cyanAccent,
-                  borderRadius: BorderRadius.circular(4.0),
-                  constraints: const BoxConstraints(minHeight: 36),
-                  children: <Widget>[
-                    StateButton(
-                      text: 'Idee',
-                      icon: Icons.tips_and_updates_rounded,
-                      isSelected: isGiftStateSelected[0],
-                    ),
-                    StateButton(
-                      text: 'Gekauft',
-                      icon: Icons.shopping_cart,
-                      isSelected: isGiftStateSelected[1],
-                    ),
-                    StateButton(
-                      text: 'Verpackt',
-                      icon: Icons.card_giftcard_rounded,
-                      isSelected: isGiftStateSelected[2],
-                    ),
-                    StateButton(
-                      text: 'Geschenkt',
-                      icon: Icons.volunteer_activism_rounded,
-                      isSelected: isGiftStateSelected[3],
-                    ),
-                  ],
+            const Divider(thickness: 2.0),
+            Padding(
+              padding: const EdgeInsets.only(top: 6.0, left: 20.0, bottom: 14.0),
+              child: Text(
+                '${widget.gift.event.eventname} • ${widget.gift.event.eventDate?.day}.${widget.gift.event.eventDate?.month}.${widget.gift.event.eventDate?.year} • Noch X Tage',
+                style: const TextStyle(
+                  color: Colors.grey,
                 ),
-              ],
-            ),*/
+              ),
+            ),
           ],
         ),
       ),

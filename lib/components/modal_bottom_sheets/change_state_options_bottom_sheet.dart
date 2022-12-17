@@ -70,6 +70,7 @@ class _ChangeStateOptionsBottomSheetState extends State<ChangeStateOptionsBottom
               ),
               onPressed: () {
                 Navigator.pop(context);
+                Navigator.pop(context);
               },
             ),
             ElevatedButton(
