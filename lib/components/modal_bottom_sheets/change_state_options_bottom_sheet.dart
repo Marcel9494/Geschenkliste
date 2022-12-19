@@ -5,11 +5,11 @@ import '../../models/contact.dart';
 import '../../models/enums/gift_state.dart';
 import '../../models/gift.dart';
 
-typedef void StringCallback(String val);
+typedef UpdatedGiftStateCallback = void Function(String updatedGiftState);
 
 class ChangeStateOptionsBottomSheet extends StatefulWidget {
   final int giftBoxPosition;
-  final StringCallback updatedGiftStateCallback;
+  final UpdatedGiftStateCallback updatedGiftStateCallback;
 
   const ChangeStateOptionsBottomSheet({
     Key? key,

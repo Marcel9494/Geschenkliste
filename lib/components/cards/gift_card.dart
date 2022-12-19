@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-import '../../models/contact.dart';
-import '../../models/enums/gift_state.dart';
 import '../modal_bottom_sheets/gift_options_bottom_sheet.dart';
 import '../modal_bottom_sheets/change_state_options_bottom_sheet.dart';
 
 import '/models/gift.dart';
+import '/models/enums/gift_state.dart';
 
 class GiftCard extends StatefulWidget {
   final Gift gift;
@@ -23,7 +22,6 @@ class GiftCard extends StatefulWidget {
 
 class _GiftCardState extends State<GiftCard> {
   List<bool> isGiftStateSelected = [false, false, false, false];
-  //String _updatedGiftState = '';
   set updatedGiftState(String value) => setState(() => widget.gift.giftState = value);
 
   @override
@@ -63,7 +61,7 @@ class _GiftCardState extends State<GiftCard> {
       child: Card(
         color: const Color(0x0fffffff),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(14.0),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
