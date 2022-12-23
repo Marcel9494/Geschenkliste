@@ -5,13 +5,13 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-import '../models/enums/events.dart';
 import '/components/buttons/save_button.dart';
 
 import '/utils/date_formatter.dart';
 
 import '/models/contact.dart';
 import '/models/gift.dart';
+import '/models/enums/events.dart';
 
 class CreateOrEditContactScreen extends StatefulWidget {
   final int contactBoxPosition;

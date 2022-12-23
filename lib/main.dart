@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '/screens/archive_screen.dart';
 import '/screens/settings_screen.dart';
 import '/screens/gift_list_screen.dart';
 import '/screens/contact_list_screen.dart';
+import '/screens/edit_archived_gift_screen.dart';
 import '/screens/create_or_edit_gift_screen.dart';
 import '/screens/create_or_edit_contact_screen.dart';
 
@@ -18,6 +19,7 @@ import '/models/contact.dart';
 import '/models/screen_arguments/create_contact_screen_arguments.dart';
 import '/models/screen_arguments/create_gift_screen_arguments.dart';
 import '/models/screen_arguments/archive_screen_arguments.dart';
+import '/models/screen_arguments/archived_gift_screen_arguments.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -95,6 +97,15 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute<String>(
               builder: (BuildContext context) => ArchiveScreen(
                 contact: args.contact,
+              ),
+              settings: settings,
+            );
+          case '/editArchivedGift':
+            final args = settings.arguments as ArchivedGiftScreenArguments;
+            return MaterialPageRoute<String>(
+              builder: (BuildContext context) => EditArchivedGiftScreen(
+                contactBoxPosition: args.contactBoxPosition,
+                archivedGiftIndex: args.archivedGiftIndex,
               ),
               settings: settings,
             );

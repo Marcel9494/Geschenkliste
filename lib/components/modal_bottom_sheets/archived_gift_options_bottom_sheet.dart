@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geschenkliste/models/screen_arguments/archived_gift_screen_arguments.dart';
 import 'package:hive/hive.dart';
 
 import '/models/contact.dart';
@@ -70,6 +71,18 @@ class _ArchivedGiftOptionsBottomSheetState extends State<ArchivedGiftOptionsBott
     }
   }
 
+  void _editArchievedGiftNote() {
+    Navigator.pop(context);
+    Navigator.popAndPushNamed(
+      context,
+      '/editArchivedGift',
+      arguments: ArchivedGiftScreenArguments(
+        widget.contactBoxPosition,
+        widget.archivedGiftIndex,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -96,6 +109,12 @@ class _ArchivedGiftOptionsBottomSheetState extends State<ArchivedGiftOptionsBott
                 width: double.infinity,
                 child: Text('Archiviertes Geschenk:', style: TextStyle(fontSize: 16.0)),
               ),
+            ),
+            const Divider(height: 0, color: Colors.grey),
+            ListTile(
+              onTap: _editArchievedGiftNote,
+              leading: const Icon(Icons.edit_note_rounded, color: Colors.cyanAccent),
+              title: const Text('Notiz bearbeiten'),
             ),
             const Divider(height: 0, color: Colors.grey),
             ListTile(
