@@ -199,6 +199,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
                       TextFormField(
                         controller: _contactnameTextController,
                         maxLength: 30,
+                        autofocus: true,
                         decoration: InputDecoration(
                           hintText: 'Name',
                           prefixIcon: const IconTheme(

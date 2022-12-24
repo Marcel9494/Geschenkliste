@@ -1,3 +1,4 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
@@ -54,6 +55,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
                 Navigator.pop(context),
                 Navigator.pop(context),
                 Navigator.popAndPushNamed(context, '/bottomNavBar'),
+                _showFlushbar('Geschenk wurde gelöscht.'),
               },
               child: const Text('Ja'),
             ),
@@ -116,9 +118,24 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
         setState(() {
           giftBox.deleteAt(widget.giftBoxPosition);
         });
+        _showFlushbar('Geschenk wurde zu ${gift.contact.contactname}\'s Archiv hinzugefügt.');
         break;
       }
     }
+  }
+
+  void _showFlushbar(String text) {
+    Flushbar(
+      message: text,
+      icon: const Icon(
+        Icons.info_rounded,
+        size: 28.0,
+        color: Colors.cyanAccent,
+      ),
+      duration: const Duration(seconds: 4),
+      leftBarIndicatorColor: Colors.cyanAccent,
+      flushbarPosition: FlushbarPosition.TOP,
+    ).show(context);
   }
 
   @override

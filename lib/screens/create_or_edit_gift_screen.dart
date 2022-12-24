@@ -212,6 +212,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                         controller: _giftnameTextController,
                         textAlignVertical: TextAlignVertical.center,
                         maxLength: 35,
+                        autofocus: true,
                         decoration: InputDecoration(
                           hintText: 'Geschenkname / Idee',
                           hintStyle: const TextStyle(color: Colors.white),

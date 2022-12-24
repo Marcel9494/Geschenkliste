@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:another_flushbar/flushbar.dart';
 
 import '../../models/contact.dart';
 import '../../models/enums/gift_state.dart';
@@ -23,6 +24,18 @@ class ChangeStateOptionsBottomSheet extends StatefulWidget {
 
 class _ChangeStateOptionsBottomSheetState extends State<ChangeStateOptionsBottomSheet> {
   List<bool> isGiftStateSelected = [false, false, false, false];
+  late Gift currentGift;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentGift();
+  }
+
+  void _loadCurrentGift() async {
+    var giftBox = await Hive.openBox('gifts');
+    currentGift = giftBox.getAt(widget.giftBoxPosition);
+  }
 
   void _changeGiftState(int giftStateIndex) async {
     setState(() {
@@ -44,13 +57,12 @@ class _ChangeStateOptionsBottomSheetState extends State<ChangeStateOptionsBottom
 
   void updateGiftState(String newGiftState) async {
     var giftBox = await Hive.openBox('gifts');
-    Gift gift = giftBox.getAt(widget.giftBoxPosition);
     var updatedGift = Gift()
-      ..giftname = gift.giftname
-      ..contact = gift.contact
+      ..giftname = currentGift.giftname
+      ..contact = currentGift.contact
       ..giftState = newGiftState
-      ..note = gift.note
-      ..event = gift.event;
+      ..note = currentGift.note
+      ..event = currentGift.event;
     giftBox.putAt(widget.giftBoxPosition, updatedGift);
   }
 
@@ -84,7 +96,7 @@ class _ChangeStateOptionsBottomSheetState extends State<ChangeStateOptionsBottom
                 Navigator.pop(context),
                 Navigator.pop(context),
                 Navigator.popAndPushNamed(context, '/bottomNavBar'),
-                _showArchievedSnackbar(),
+                _showArchievedFlushbar(),
               },
             ),
           ],
@@ -93,17 +105,18 @@ class _ChangeStateOptionsBottomSheetState extends State<ChangeStateOptionsBottom
     );
   }
 
-  void _showArchievedSnackbar() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Geschenk wurde archiviert',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.cyanAccent),
-        ),
-        backgroundColor: Color(0x0fffffff),
+  void _showArchievedFlushbar() {
+    Flushbar(
+      message: 'Geschenk wurde zu ${currentGift.contact.contactname}\'s Archiv hinzugefügt.',
+      icon: const Icon(
+        Icons.info_rounded,
+        size: 28.0,
+        color: Colors.cyanAccent,
       ),
-    );
+      duration: const Duration(seconds: 4),
+      leftBarIndicatorColor: Colors.cyanAccent,
+      flushbarPosition: FlushbarPosition.TOP,
+    ).show(context);
   }
 
   void _archiveGift() async {

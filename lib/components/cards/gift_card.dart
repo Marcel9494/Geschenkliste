@@ -89,7 +89,7 @@ class _GiftCardState extends State<GiftCard> {
                     avatar: CircleAvatar(
                       backgroundColor: Colors.grey.shade800,
                       child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 700),
+                        duration: const Duration(milliseconds: 600),
                         transitionBuilder: (Widget child, Animation<double> animation) {
                           return ScaleTransition(scale: animation, child: child);
                         },
@@ -100,7 +100,7 @@ class _GiftCardState extends State<GiftCard> {
                       width: 70.0,
                       child: Center(
                         child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 700),
+                          duration: const Duration(milliseconds: 600),
                           transitionBuilder: (Widget child, Animation<double> animation) {
                             return ScaleTransition(scale: animation, child: child);
                           },
