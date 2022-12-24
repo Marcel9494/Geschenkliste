@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:geschenkliste/models/enums/gift_state.dart';
 import 'package:hive/hive.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -17,12 +16,13 @@ class GiftListScreen extends StatefulWidget {
   State<GiftListScreen> createState() => _GiftListScreenState();
 }
 
-class _GiftListScreenState extends State<GiftListScreen> {
+class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStateMixin {
   final TextEditingController _searchTermTextController = TextEditingController(text: '');
   List<String> eventFilter = [];
   late List<Gift> gifts = [];
   int selectedFilterIndex = 0;
   String giftFilter = 'Alle'; // TODO Eigenes Enum für Geschenkfilter anlegen oder in Geschenk Status integrieren?
+  late Animation<double> _cardFadeInAnimation;
 
   @override
   void initState() {
@@ -56,7 +56,17 @@ class _GiftListScreenState extends State<GiftListScreen> {
         }
       }
     }
+    _startCardFadeInAnimation();
     return gifts;
+  }
+
+  void _startCardFadeInAnimation() {
+    AnimationController fadeInAnimation = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _cardFadeInAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(fadeInAnimation);
+    fadeInAnimation.forward();
   }
 
   void _clearSearchField() {
@@ -202,7 +212,14 @@ class _GiftListScreenState extends State<GiftListScreen> {
                               itemCount: gifts.length,
                               physics: const AlwaysScrollableScrollPhysics(),
                               itemBuilder: (BuildContext context, int index) {
-                                return gifts[index].showInFilteredList ? GiftCard(gift: gifts[index]) : const SizedBox.shrink();
+                                return gifts[index].showInFilteredList
+                                    ? FadeTransition(
+                                        opacity: _cardFadeInAnimation,
+                                        child: GiftCard(
+                                          gift: gifts[index],
+                                        ),
+                                      )
+                                    : const SizedBox.shrink();
                               },
                             ),
                           ),

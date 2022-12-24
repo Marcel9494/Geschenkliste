@@ -44,14 +44,15 @@ class _GiftCardState extends State<GiftCard> {
   }
 
   Icon getIcon() {
+    // TODO enum verwenden!
     if (widget.gift.giftState == 'Idee') {
-      return const Icon(Icons.tips_and_updates_rounded, size: 12.0, color: Colors.cyanAccent);
+      return Icon(Icons.tips_and_updates_rounded, size: 12.0, color: Colors.cyanAccent, key: ValueKey(widget.gift.giftState));
     } else if (widget.gift.giftState == 'Gekauft') {
-      return const Icon(Icons.shopping_cart, size: 12.0, color: Colors.cyanAccent);
+      return Icon(Icons.shopping_cart, size: 12.0, color: Colors.cyanAccent, key: ValueKey(widget.gift.giftState));
     } else if (widget.gift.giftState == 'Verpackt') {
-      return const Icon(Icons.card_giftcard_rounded, size: 12.0, color: Colors.cyanAccent);
+      return Icon(Icons.card_giftcard_rounded, size: 12.0, color: Colors.cyanAccent, key: ValueKey(widget.gift.giftState));
     }
-    return const Icon(Icons.volunteer_activism_rounded, size: 12.0, color: Colors.cyanAccent);
+    return Icon(Icons.volunteer_activism_rounded, size: 12.0, color: Colors.cyanAccent, key: ValueKey(widget.gift.giftState));
   }
 
   @override
@@ -87,15 +88,28 @@ class _GiftCardState extends State<GiftCard> {
                     labelPadding: const EdgeInsets.symmetric(vertical: -3.0, horizontal: 5.0),
                     avatar: CircleAvatar(
                       backgroundColor: Colors.grey.shade800,
-                      child: getIcon(),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 700),
+                        transitionBuilder: (Widget child, Animation<double> animation) {
+                          return ScaleTransition(scale: animation, child: child);
+                        },
+                        child: getIcon(),
+                      ),
                     ),
                     label: SizedBox(
                       width: 70.0,
                       child: Center(
-                        child: Text(
-                          widget.gift.giftState,
-                          style: const TextStyle(
-                            color: Colors.cyanAccent,
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 700),
+                          transitionBuilder: (Widget child, Animation<double> animation) {
+                            return ScaleTransition(scale: animation, child: child);
+                          },
+                          child: Text(
+                            widget.gift.giftState,
+                            key: ValueKey(widget.gift.giftState),
+                            style: const TextStyle(
+                              color: Colors.cyanAccent,
+                            ),
                           ),
                         ),
                       ),
@@ -142,12 +156,41 @@ class _GiftCardState extends State<GiftCard> {
             ),
             const Divider(thickness: 2.0),
             Padding(
-              padding: const EdgeInsets.only(top: 6.0, left: 20.0, bottom: 14.0),
-              child: Text(
-                '${widget.gift.event.eventname} • ${widget.gift.event.eventDate?.day}.${widget.gift.event.eventDate?.month}.${widget.gift.event.eventDate?.year} • Noch X Tage',
-                style: const TextStyle(
-                  color: Colors.grey,
-                ),
+              padding: const EdgeInsets.only(top: 6.0, left: 20.0, bottom: 14.0, right: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.gift.event.eventname,
+                    style: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const Text(
+                    '•',
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Text(
+                    '${widget.gift.event.eventDate?.day}.${widget.gift.event.eventDate?.month}.${widget.gift.event.eventDate?.year}',
+                    style: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const Text(
+                    '•',
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const Text(
+                    'Noch X Tage',
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
