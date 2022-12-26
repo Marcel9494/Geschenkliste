@@ -31,7 +31,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
       if (contacts[i].contactname == widget.contact.contactname) {
         for (int j = 0; j < contacts[i].archivedGiftsData.length; j++) {
           final splittedArchivedGiftData = contacts[i].archivedGiftsData[j].split(';');
-          var archivedGift = ArchivedGift(
+          ArchivedGift archivedGift = ArchivedGift(
             index: j,
             giftname: splittedArchivedGiftData[0],
             eventname: splittedArchivedGiftData[1],

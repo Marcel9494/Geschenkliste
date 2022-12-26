@@ -115,34 +115,6 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
                 ),
               ),
             ),
-            SizedBox(
-              height: 64,
-              child: ListView.builder(
-                itemCount: eventFilter.length,
-                scrollDirection: Axis.horizontal,
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(10.0, 4.0, 0.0, 4.0),
-                    child: ChoiceChip(
-                      label: Text(
-                        eventFilter[index],
-                        style: TextStyle(color: selectedFilterIndex == index ? Colors.black87 : Colors.white),
-                      ),
-                      selected: selectedFilterIndex == index,
-                      selectedColor: Colors.cyanAccent.shade400,
-                      onSelected: (bool selected) {
-                        setState(() {
-                          if (selected) {
-                            selectedFilterIndex = index;
-                          }
-                        });
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -154,7 +126,7 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
+                  padding: const EdgeInsets.only(right: 12.0),
                   child: TextButton.icon(
                     label: Text(
                       giftFilter,
@@ -179,6 +151,34 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
                   ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 54,
+              child: ListView.builder(
+                itemCount: eventFilter.length,
+                scrollDirection: Axis.horizontal,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemBuilder: (BuildContext context, int index) {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 4.0),
+                    child: ChoiceChip(
+                      label: Text(
+                        eventFilter[index],
+                        style: TextStyle(color: selectedFilterIndex == index ? Colors.black87 : Colors.white),
+                      ),
+                      selected: selectedFilterIndex == index,
+                      selectedColor: Colors.cyanAccent.shade400,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          if (selected) {
+                            selectedFilterIndex = index;
+                          }
+                        });
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
             FutureBuilder<List<Gift>>(
               future: _getGiftList(_searchTermTextController.text, giftFilter),

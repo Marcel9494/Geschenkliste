@@ -56,7 +56,8 @@ class _ArchiveCardState extends State<ArchiveCard> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20.0, 8.0, 0.0, 14.0),
               child: Text(
-                '${widget.archivedGift.eventname} - ${DateFormat('dd.MM.yyyy').format(DateTime.parse(widget.archivedGift.eventDate))}',
+                // TODO kann dies besser gemacht werden anstatt auf 'null' zu prüfen?
+                '${widget.archivedGift.eventname} ${widget.archivedGift.eventDate == 'null' ? '' : '• ${DateFormat('dd.MM.yyyy').format(DateTime.parse(widget.archivedGift.eventDate))}'}',
                 style: const TextStyle(
                   color: Colors.grey,
                 ),
