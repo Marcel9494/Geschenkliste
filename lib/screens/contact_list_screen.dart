@@ -203,7 +203,9 @@ class _ContactListScreenState extends State<ContactListScreen> {
                                                 Padding(
                                                   padding: const EdgeInsets.fromLTRB(100.0, 12.0, 0.0, 12.0),
                                                   child: Text(
-                                                    '${dateFormatter.format(contacts[index + 1].nextBirthday!)} - ${contacts[index + 1].nextBirthday!.year}',
+                                                    contacts[index + 1].nextBirthday!.year == 0
+                                                        ? 'Kein Geburtstag eingetragen'
+                                                        : '${dateFormatter.format(contacts[index + 1].nextBirthday!)} - ${contacts[index + 1].nextBirthday!.year}',
                                                     style: const TextStyle(
                                                       fontSize: 16.0,
                                                       fontWeight: FontWeight.bold,

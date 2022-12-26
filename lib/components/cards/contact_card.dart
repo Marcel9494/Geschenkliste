@@ -21,16 +21,13 @@ class ContactCard extends StatefulWidget {
 
 class _ContactCardState extends State<ContactCard> {
   String? selectedMenuItem;
-  late DateFormat dateFormatter;
   String birthdayString = '';
-  String yearOfBirthString = '';
 
   @override
   initState() {
     super.initState();
-    dateFormatter = DateFormat('EE dd.MM.yy', 'de');
+    DateFormat dateFormatter = DateFormat('EE dd.MM.yy', 'de');
     birthdayString = widget.contact.nextBirthday != null && widget.contact.nextBirthday!.year != 0 ? dateFormatter.format(widget.contact.nextBirthday!) : '-';
-    yearOfBirthString = widget.contact.birthday != null ? widget.contact.birthday!.year.toString() : '';
   }
 
   @override

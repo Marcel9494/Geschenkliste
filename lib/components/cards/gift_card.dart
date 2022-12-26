@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../modal_bottom_sheets/gift_options_bottom_sheet.dart';
@@ -23,11 +24,14 @@ class GiftCard extends StatefulWidget {
 class _GiftCardState extends State<GiftCard> {
   List<bool> isGiftStateSelected = [false, false, false, false];
   set updatedGiftState(String value) => setState(() => widget.gift.giftState = value);
+  String eventDateString = '';
 
   @override
   initState() {
     super.initState();
     getCurrentGiftState();
+    DateFormat dateFormatter = DateFormat('EE dd.MM.yy', 'de');
+    eventDateString = widget.gift.event.eventDate == null ? '' : dateFormatter.format(widget.gift.event.eventDate!);
   }
 
   void getCurrentGiftState() async {
@@ -44,15 +48,23 @@ class _GiftCardState extends State<GiftCard> {
   }
 
   Icon getIcon() {
-    // TODO enum verwenden!
-    if (widget.gift.giftState == 'Idee') {
+    if (widget.gift.giftState == GiftStatus.idea.name) {
       return Icon(Icons.tips_and_updates_rounded, size: 12.0, color: Colors.cyanAccent, key: ValueKey(widget.gift.giftState));
-    } else if (widget.gift.giftState == 'Gekauft') {
+    } else if (widget.gift.giftState == GiftStatus.bought.name) {
       return Icon(Icons.shopping_cart, size: 12.0, color: Colors.cyanAccent, key: ValueKey(widget.gift.giftState));
-    } else if (widget.gift.giftState == 'Verpackt') {
+    } else if (widget.gift.giftState == GiftStatus.packed.name) {
       return Icon(Icons.card_giftcard_rounded, size: 12.0, color: Colors.cyanAccent, key: ValueKey(widget.gift.giftState));
     }
     return Icon(Icons.volunteer_activism_rounded, size: 12.0, color: Colors.cyanAccent, key: ValueKey(widget.gift.giftState));
+  }
+
+  int _getRemainingDaysToEvent() {
+    if (widget.gift.event.eventDate == null) {
+      return 9999;
+    }
+    DateTime eventDate = DateTime(DateTime.now().year + 1, widget.gift.event.eventDate!.month, widget.gift.event.eventDate!.day);
+    DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    return (eventDate.difference(today).inHours / 24).round() % 365; // TODO Schaltjahre mit berücksichtigen (366 Tage)
   }
 
   @override
@@ -138,8 +150,7 @@ class _GiftCardState extends State<GiftCard> {
               padding: const EdgeInsets.only(top: 8.0, left: 20.0),
               child: Text(
                 widget.gift.giftname,
-                style: TextStyle(
-                  color: Colors.grey.shade300,
+                style: const TextStyle(
                   fontSize: 15.0,
                   fontWeight: FontWeight.bold,
                 ),
@@ -166,27 +177,29 @@ class _GiftCardState extends State<GiftCard> {
                       color: Colors.grey,
                     ),
                   ),
-                  const Text(
-                    '•',
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
                   Text(
-                    '${widget.gift.event.eventDate?.day}.${widget.gift.event.eventDate?.month}.${widget.gift.event.eventDate?.year}',
+                    widget.gift.event.eventDate == null ? '' : '•',
                     style: const TextStyle(
                       color: Colors.grey,
                     ),
                   ),
-                  const Text(
-                    '•',
-                    style: TextStyle(
+                  Text(
+                    eventDateString,
+                    style: const TextStyle(
                       color: Colors.grey,
                     ),
                   ),
-                  const Text(
-                    'Noch X Tage',
-                    style: TextStyle(
+                  Text(
+                    widget.gift.event.eventDate == null ? '' : '•',
+                    style: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Text(
+                    widget.gift.event.eventDate == null
+                        ? ''
+                        : 'Noch ${_getRemainingDaysToEvent() == 1 ? '${_getRemainingDaysToEvent()} Tag' : '${_getRemainingDaysToEvent()} Tage'}',
+                    style: const TextStyle(
                       color: Colors.grey,
                     ),
                   ),
