@@ -30,7 +30,7 @@ class _GiftCardState extends State<GiftCard> {
   initState() {
     super.initState();
     getCurrentGiftState();
-    DateFormat dateFormatter = DateFormat('EE dd.MM.yy', 'de');
+    DateFormat dateFormatter = DateFormat('EE, dd. LLL.', 'de');
     eventDateString = widget.gift.event.eventDate == null ? '' : dateFormatter.format(widget.gift.event.eventDate!);
   }
 
@@ -81,46 +81,36 @@ class _GiftCardState extends State<GiftCard> {
           children: [
             Row(
               children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20.0, 0.0, 10.0, 0.0),
-                    child: Text(
-                      'Für ${widget.gift.contact.contactname}',
-                      overflow: TextOverflow.fade,
-                      softWrap: false,
-                      style: const TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
                 GestureDetector(
-                  child: Chip(
-                    labelPadding: const EdgeInsets.symmetric(vertical: -3.0, horizontal: 5.0),
-                    avatar: CircleAvatar(
-                      backgroundColor: Colors.grey.shade800,
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 600),
-                        transitionBuilder: (Widget child, Animation<double> animation) {
-                          return ScaleTransition(scale: animation, child: child);
-                        },
-                        child: getIcon(),
-                      ),
-                    ),
-                    label: SizedBox(
-                      width: 70.0,
-                      child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: Chip(
+                      labelPadding: const EdgeInsets.symmetric(vertical: -3.0, horizontal: 5.0),
+                      avatar: CircleAvatar(
+                        backgroundColor: Colors.grey.shade800,
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 600),
                           transitionBuilder: (Widget child, Animation<double> animation) {
                             return ScaleTransition(scale: animation, child: child);
                           },
-                          child: Text(
-                            widget.gift.giftState,
-                            key: ValueKey(widget.gift.giftState),
-                            style: const TextStyle(
-                              color: Colors.cyanAccent,
+                          child: getIcon(),
+                        ),
+                      ),
+                      label: SizedBox(
+                        width: 80.0,
+                        child: Center(
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 600),
+                            transitionBuilder: (Widget child, Animation<double> animation) {
+                              return ScaleTransition(scale: animation, child: child);
+                            },
+                            child: Text(
+                              widget.gift.giftState,
+                              key: ValueKey(widget.gift.giftState),
+                              style: const TextStyle(
+                                letterSpacing: 1.0,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -137,6 +127,20 @@ class _GiftCardState extends State<GiftCard> {
                     ),
                   ),
                 ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(14.0, 0.0, 10.0, 0.0),
+                    child: Text(
+                      'Für ${widget.gift.contact.contactname}',
+                      overflow: TextOverflow.fade,
+                      softWrap: false,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
                 IconButton(
                   onPressed: () => showCupertinoModalBottomSheet(
                     context: context,
@@ -147,17 +151,17 @@ class _GiftCardState extends State<GiftCard> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 8.0, left: 20.0),
+              padding: const EdgeInsets.only(top: 16.0, left: 20.0),
               child: Text(
                 widget.gift.giftname,
                 style: const TextStyle(
-                  fontSize: 15.0,
+                  fontSize: 16.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 18.0, left: 20.0, bottom: 12.0),
+              padding: const EdgeInsets.only(top: 22.0, left: 20.0, bottom: 16.0),
               child: Text(
                 widget.gift.note.isEmpty ? 'Notizen: -' : 'Notizen: ${widget.gift.note}',
                 style: const TextStyle(
@@ -165,9 +169,8 @@ class _GiftCardState extends State<GiftCard> {
                 ),
               ),
             ),
-            const Divider(thickness: 2.0),
             Padding(
-              padding: const EdgeInsets.only(top: 6.0, left: 20.0, bottom: 14.0, right: 20.0),
+              padding: const EdgeInsets.only(top: 6.0, left: 20.0, bottom: 16.0, right: 20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
