@@ -143,91 +143,93 @@ class _ContactListScreenState extends State<ContactListScreen> {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          FutureBuilder<List<Contact>>(
-            future: _getContactList(_searchedContactnameTextController.text),
-            builder: (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.waiting:
-                  return const Center(child: CircularProgressIndicator(color: Colors.cyanAccent));
-                default:
-                  if (snapshot.hasError) {
-                    return const CenteredText(text: 'Kontakte konnten nicht geladen werden.', divider: 2);
-                  } else {
-                    if (contacts.isEmpty) {
-                      return const CenteredText(text: 'Noch keine Kontakte vorhanden.', divider: 2);
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FutureBuilder<List<Contact>>(
+              future: _getContactList(_searchedContactnameTextController.text),
+              builder: (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return const Center(child: CircularProgressIndicator(color: Colors.cyanAccent));
+                  default:
+                    if (snapshot.hasError) {
+                      return const CenteredText(text: 'Kontakte konnten nicht geladen werden.', divider: 2);
                     } else {
-                      return Expanded(
-                        child: RefreshIndicator(
-                          onRefresh: () {
-                            var contacts = _getContactList(_searchedContactnameTextController.text);
-                            setState(() {});
-                            return contacts;
-                          },
-                          color: Colors.cyanAccent,
-                          child: ListView.builder(
-                            itemCount: contacts.length,
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            itemBuilder: (BuildContext context, int index) {
-                              return Column(
-                                children: [
-                                  index == 0
-                                      ? Row(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.fromLTRB(100.0, 12.0, 0.0, 12.0),
-                                              child: Text(
-                                                '${dateFormatter.format(contacts[0].nextBirthday!)} - ${contacts[0].nextBirthday!.year}',
-                                                style: const TextStyle(
-                                                  fontSize: 16.0,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                      : const SizedBox.shrink(),
-                                  Row(
-                                    children: [
-                                      DayCard(days: contacts[index].remainingDays),
-                                      ContactCard(contact: contacts[index]),
-                                    ],
-                                  ),
-                                  index + 1 < contacts.length && contacts[index].nextBirthday != null && contacts[index + 1].nextBirthday != null
-                                      ? contacts[index].nextBirthday?.month != contacts[index + 1].nextBirthday?.month
-                                          ? Row(
-                                              children: [
-                                                Padding(
-                                                  padding: const EdgeInsets.fromLTRB(100.0, 12.0, 0.0, 12.0),
-                                                  child: Text(
-                                                    contacts[index + 1].nextBirthday!.year == 0
-                                                        ? 'Kein Geburtstag eingetragen'
-                                                        : '${dateFormatter.format(contacts[index + 1].nextBirthday!)} - ${contacts[index + 1].nextBirthday!.year}',
-                                                    style: const TextStyle(
-                                                      fontSize: 16.0,
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
+                      if (contacts.isEmpty) {
+                        return const CenteredText(text: 'Noch keine Kontakte vorhanden.', divider: 2);
+                      } else {
+                        return Expanded(
+                          child: RefreshIndicator(
+                            onRefresh: () {
+                              var contacts = _getContactList(_searchedContactnameTextController.text);
+                              setState(() {});
+                              return contacts;
+                            },
+                            color: Colors.cyanAccent,
+                            child: ListView.builder(
+                              itemCount: contacts.length,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemBuilder: (BuildContext context, int index) {
+                                return Column(
+                                  children: [
+                                    index == 0
+                                        ? Row(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.fromLTRB(100.0, 12.0, 0.0, 12.0),
+                                                child: Text(
+                                                  '${dateFormatter.format(contacts[0].nextBirthday!)} - ${contacts[0].nextBirthday!.year}',
+                                                  style: const TextStyle(
+                                                    fontSize: 16.0,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                              ],
-                                            )
-                                          : const SizedBox.shrink()
-                                      : const SizedBox.shrink(),
-                                ],
-                              );
-                            },
+                                              ),
+                                            ],
+                                          )
+                                        : const SizedBox.shrink(),
+                                    Row(
+                                      children: [
+                                        DayCard(days: contacts[index].remainingDays),
+                                        ContactCard(contact: contacts[index]),
+                                      ],
+                                    ),
+                                    index + 1 < contacts.length && contacts[index].nextBirthday != null && contacts[index + 1].nextBirthday != null
+                                        ? contacts[index].nextBirthday?.month != contacts[index + 1].nextBirthday?.month
+                                            ? Row(
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.fromLTRB(100.0, 12.0, 0.0, 12.0),
+                                                    child: Text(
+                                                      contacts[index + 1].nextBirthday!.year == 0
+                                                          ? 'Kein Geburtstag eingetragen'
+                                                          : '${dateFormatter.format(contacts[index + 1].nextBirthday!)} - ${contacts[index + 1].nextBirthday!.year}',
+                                                      style: const TextStyle(
+                                                        fontSize: 16.0,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            : const SizedBox.shrink()
+                                        : const SizedBox.shrink(),
+                                  ],
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     }
-                  }
-              }
-            },
-          ),
-        ],
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

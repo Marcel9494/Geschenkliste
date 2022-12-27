@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
+import '/models/contact.dart';
+import '/models/screen_arguments/archive_screen_arguments.dart';
 import '/models/screen_arguments/create_contact_screen_arguments.dart';
 
 class ContactOptionsBottomSheet extends StatefulWidget {
@@ -16,6 +18,17 @@ class ContactOptionsBottomSheet extends StatefulWidget {
 }
 
 class _ContactOptionsBottomSheetState extends State<ContactOptionsBottomSheet> {
+  void _getContactAndShowArchiveScreen() async {
+    var contactBox = await Hive.openBox('contacts');
+    Contact contact = contactBox.getAt(widget.contactBoxPosition);
+    _navigateToArchiveScreen(contact);
+  }
+
+  void _navigateToArchiveScreen(Contact contact) {
+    Navigator.pop(context);
+    Navigator.pushNamed(context, '/archive', arguments: ArchiveScreenArguments(contact));
+  }
+
   void _showEditContactScreen() {
     Navigator.pop(context);
     Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(widget.contactBoxPosition));
@@ -87,6 +100,12 @@ class _ContactOptionsBottomSheetState extends State<ContactOptionsBottomSheet> {
                 width: double.infinity,
                 child: Text('Kontakt:', style: TextStyle(fontSize: 16.0)),
               ),
+            ),
+            const Divider(height: 0, color: Colors.grey),
+            ListTile(
+              onTap: _getContactAndShowArchiveScreen,
+              leading: const Icon(Icons.archive_rounded, color: Colors.cyanAccent),
+              title: const Text('Archiv'),
             ),
             const Divider(height: 0, color: Colors.grey),
             ListTile(

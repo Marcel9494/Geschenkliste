@@ -84,10 +84,10 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF272727),
+              Color(0xFF232323),
               Color(0xFF171717),
             ],
-            stops: [0.0, 0.5],
+            stops: [0.0, 0.4],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
