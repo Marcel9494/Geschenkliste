@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '/models/gift.dart';
-import '/models/enums/events.dart';
+import '/models/event.dart';
 
 import '/components/cards/gift_card.dart';
 import '/components/texts/centered_text.dart';
@@ -29,35 +28,11 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
   @override
   void initState() {
     super.initState();
-    _getEventFilter();
+    eventFilter = Event.getEventFilterNames();
   }
 
-  void _getEventFilter() {
-    for (int i = 0; i < Events.values.length; i++) {
-      eventFilter.add(Events.values[i].filterName);
-    }
-  }
-
-  Future<List<Gift>> _getGiftList(String searchTerm, String stateFilter) async {
-    int giftNumber = 0;
-    var giftBox = await Hive.openBox('gifts');
-    gifts.clear();
-    for (int i = 0; i < giftBox.length; i++) {
-      Gift tempGift = giftBox.getAt(i);
-      if (tempGift.contact.contactname.toLowerCase().contains(searchTerm.toLowerCase()) || tempGift.giftname.toLowerCase().contains(searchTerm.toLowerCase())) {
-        if (stateFilter == 'Alle' || tempGift.giftState.toLowerCase().contains(stateFilter.toLowerCase())) {
-          gifts.add(giftBox.getAt(i));
-          gifts[giftNumber].boxPosition = giftNumber;
-          gifts[giftNumber].showInFilteredList = true;
-          if (eventFilter[selectedFilterIndex] != Events.anyDate.filterName) {
-            if (gifts[giftNumber].event.eventname != eventFilter[selectedFilterIndex]) {
-              gifts[giftNumber].showInFilteredList = false;
-            }
-          }
-          giftNumber++;
-        }
-      }
-    }
+  Future<List<Gift>> _getGiftList() async {
+    gifts = await Gift.getGiftList(_searchTermTextController.text, giftFilter, selectedFilterIndex);
     _startCardFadeInAnimation();
     return gifts;
   }
@@ -71,9 +46,9 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
     fadeInAnimation.forward();
   }
 
-  void _clearSearchField() {
+  void _clearSearchField() async {
     _searchTermTextController.text = '';
-    _getGiftList(_searchTermTextController.text, giftFilter);
+    _getGiftList();
     FocusScope.of(context).requestFocus(FocusNode());
   }
 
@@ -84,7 +59,7 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF232323),
+              Color(0xFF202020),
               Color(0xFF171717),
             ],
             stops: [0.0, 0.4],
@@ -103,7 +78,7 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
                     controller: _searchTermTextController,
                     onChanged: (String searchedContactname) {
                       setState(() {
-                        _getGiftList(searchedContactname, giftFilter);
+                        _getGiftList();
                       });
                     },
                     decoration: InputDecoration(
@@ -198,7 +173,7 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
                 ),
               ),
               FutureBuilder<List<Gift>>(
-                future: _getGiftList(_searchTermTextController.text, giftFilter),
+                future: _getGiftList(),
                 builder: (BuildContext context, AsyncSnapshot<List<Gift>> snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
@@ -219,10 +194,10 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
                         } else {
                           return Expanded(
                             child: RefreshIndicator(
-                              onRefresh: () {
-                                var gifts = _getGiftList(_searchTermTextController.text, giftFilter);
+                              onRefresh: () async {
+                                gifts = await _getGiftList();
                                 setState(() {});
-                                return gifts;
+                                return;
                               },
                               color: Colors.cyanAccent,
                               child: ListView.builder(

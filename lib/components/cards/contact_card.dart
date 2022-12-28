@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-import '../../models/screen_arguments/archive_screen_arguments.dart';
 import '../modal_bottom_sheets/contact_options_bottom_sheet.dart';
 
 import '/models/contact.dart';
+import '/models/screen_arguments/archive_screen_arguments.dart';
+import '/models/screen_arguments/create_gift_screen_arguments.dart';
 
 class ContactCard extends StatefulWidget {
   final Contact contact;
@@ -26,7 +27,7 @@ class _ContactCardState extends State<ContactCard> {
   @override
   initState() {
     super.initState();
-    DateFormat dateFormatter = DateFormat('EE dd.MM.yy', 'de');
+    DateFormat dateFormatter = DateFormat('EE, dd. LLL.', 'de');
     birthdayString = widget.contact.nextBirthday != null && widget.contact.nextBirthday!.year != 0 ? dateFormatter.format(widget.contact.nextBirthday!) : '-';
   }
 
@@ -40,6 +41,9 @@ class _ContactCardState extends State<ContactCard> {
           onTap: () => Navigator.pushNamed(context, '/archive', arguments: ArchiveScreenArguments(widget.contact)),
           child: Card(
             color: const Color(0x0fffffff),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14.0),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -58,6 +62,12 @@ class _ContactCardState extends State<ContactCard> {
                       ),
                     ),
                     IconButton(
+                      onPressed: () => Navigator.pushNamed(context, '/createOrEditGift', arguments: CreateGiftScreenArguments(-1)),
+                      icon: const Icon(Icons.add_rounded),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                    IconButton(
                       onPressed: () => showCupertinoModalBottomSheet(
                         context: context,
                         builder: (context) => ContactOptionsBottomSheet(contactBoxPosition: widget.contact.boxPosition),
@@ -67,7 +77,7 @@ class _ContactCardState extends State<ContactCard> {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20.0, 8.0, 0.0, 14.0),
+                  padding: const EdgeInsets.fromLTRB(20.0, 16.0, 0.0, 14.0),
                   child: widget.contact.birthday != null
                       ? Text(
                           '${widget.contact.birthdayAge}. Geburtstag am $birthdayString',

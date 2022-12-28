@@ -1,11 +1,21 @@
 import 'package:hive/hive.dart';
 
+import '/models/enums/events.dart';
+
 @HiveType(typeId: 2)
 class Event extends HiveObject {
   Event({required this.eventname, this.eventDate});
 
   late String eventname;
   late DateTime? eventDate;
+
+  static List<String> getEventFilterNames() {
+    List<String> eventList = [];
+    for (int i = 0; i < Events.values.length; i++) {
+      eventList.add(Events.values[i].filterName);
+    }
+    return eventList;
+  }
 }
 
 class EventAdapter extends TypeAdapter<Event> {

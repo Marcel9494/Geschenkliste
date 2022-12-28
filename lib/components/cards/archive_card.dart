@@ -27,6 +27,9 @@ class _ArchiveCardState extends State<ArchiveCard> {
       padding: const EdgeInsets.only(left: 6.0),
       child: Card(
         color: const Color(0x0fffffff),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14.0),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

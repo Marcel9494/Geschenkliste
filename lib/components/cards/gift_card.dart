@@ -23,7 +23,7 @@ class GiftCard extends StatefulWidget {
 
 class _GiftCardState extends State<GiftCard> {
   List<bool> isGiftStateSelected = [false, false, false, false];
-  set updatedGiftState(String value) => setState(() => widget.gift.giftState = value);
+  set updatedGiftState(String value) => (widget.gift.giftState = value);
   String eventDateString = '';
 
   @override
@@ -121,9 +121,7 @@ class _GiftCardState extends State<GiftCard> {
                     context: context,
                     builder: (context) => ChangeStateOptionsBottomSheet(
                       giftBoxPosition: widget.gift.boxPosition,
-                      updatedGiftStateCallback: (newGiftSate) => setState(
-                        () => widget.gift.giftState = newGiftSate,
-                      ),
+                      updatedGiftStateCallback: (newGiftSate) => setState(() => widget.gift.giftState = newGiftSate),
                     ),
                   ),
                 ),
