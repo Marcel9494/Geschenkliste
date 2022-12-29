@@ -179,10 +179,10 @@ class _ContactListScreenState extends State<ContactListScreen> {
                         } else {
                           return Expanded(
                             child: RefreshIndicator(
-                              onRefresh: () {
-                                var contacts = _getContactList(_searchedContactnameTextController.text);
+                              onRefresh: () async {
+                                contacts = await _getContactList(_searchedContactnameTextController.text);
                                 setState(() {});
-                                return contacts;
+                                return;
                               },
                               color: Colors.cyanAccent,
                               child: ListView.builder(

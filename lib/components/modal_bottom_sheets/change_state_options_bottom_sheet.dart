@@ -53,6 +53,7 @@ class _ChangeStateOptionsBottomSheetState extends State<ChangeStateOptionsBottom
     if (!isGiftStateSelected[3]) {
       Navigator.pop(context);
     }
+    FocusScope.of(context).unfocus();
   }
 
   void updateGiftState(String newGiftState) async {

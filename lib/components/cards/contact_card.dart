@@ -38,7 +38,10 @@ class _ContactCardState extends State<ContactCard> {
       child: Padding(
         padding: const EdgeInsets.only(left: 6.0),
         child: GestureDetector(
-          onTap: () => Navigator.pushNamed(context, '/archive', arguments: ArchiveScreenArguments(widget.contact)),
+          onTap: () => {
+            Navigator.pushNamed(context, '/archive', arguments: ArchiveScreenArguments(widget.contact)),
+            FocusScope.of(context).unfocus(),
+          },
           child: Card(
             color: const Color(0x0fffffff),
             shape: RoundedRectangleBorder(
@@ -62,7 +65,10 @@ class _ContactCardState extends State<ContactCard> {
                       ),
                     ),
                     IconButton(
-                      onPressed: () => Navigator.pushNamed(context, '/createOrEditGift', arguments: CreateGiftScreenArguments(-1)),
+                      onPressed: () => {
+                        Navigator.pushNamed(context, '/createOrEditGift', arguments: CreateGiftScreenArguments(-1)),
+                        FocusScope.of(context).unfocus(),
+                      },
                       icon: const Icon(Icons.add_rounded),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),

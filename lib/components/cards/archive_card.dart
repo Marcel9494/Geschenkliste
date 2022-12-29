@@ -4,16 +4,19 @@ import 'package:intl/intl.dart';
 
 import '../modal_bottom_sheets/archived_gift_options_bottom_sheet.dart';
 
+import '/models/contact.dart';
 import '/models/archived_gift.dart';
 
 class ArchiveCard extends StatefulWidget {
   final int contactBoxPosition;
   final ArchivedGift archivedGift;
+  final Contact contact;
 
   const ArchiveCard({
     Key? key,
     required this.contactBoxPosition,
     required this.archivedGift,
+    required this.contact,
   }) : super(key: key);
 
   @override
@@ -50,7 +53,11 @@ class _ArchiveCardState extends State<ArchiveCard> {
                 IconButton(
                   onPressed: () => showCupertinoModalBottomSheet(
                     context: context,
-                    builder: (context) => ArchivedGiftOptionsBottomSheet(contactBoxPosition: widget.contactBoxPosition, archivedGiftIndex: widget.archivedGift.index),
+                    builder: (context) => ArchivedGiftOptionsBottomSheet(
+                      contactBoxPosition: widget.contactBoxPosition,
+                      archivedGiftIndex: widget.archivedGift.index,
+                      contact: widget.contact,
+                    ),
                   ),
                   icon: const Icon(Icons.more_vert),
                 ),

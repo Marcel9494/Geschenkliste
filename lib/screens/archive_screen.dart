@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:geschenkliste/components/texts/centered_text.dart';
 import 'package:hive/hive.dart';
 import 'package:timelines/timelines.dart';
 
 import '/components/cards/archive_card.dart';
+import '/components/texts/centered_text.dart';
 
 import '/models/contact.dart';
 import '/models/archived_gift.dart';
@@ -90,6 +90,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                         child: ArchiveCard(
                           contactBoxPosition: widget.contact.boxPosition,
                           archivedGift: archivedGifts[index],
+                          contact: widget.contact,
                         ),
                       ),
                     ),

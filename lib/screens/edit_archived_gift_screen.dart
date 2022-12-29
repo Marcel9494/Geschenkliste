@@ -64,7 +64,7 @@ class _EditArchivedGiftScreenState extends State<EditArchivedGiftScreen> {
       if (mounted) {
         FocusScope.of(context).requestFocus(FocusNode());
         Navigator.pop(context);
-        Navigator.pushNamed(context, '/archive', arguments: ArchiveScreenArguments(contactWithArchivedGift));
+        Navigator.popAndPushNamed(context, '/archive', arguments: ArchiveScreenArguments(contactWithArchivedGift));
       }
     });
   }
@@ -109,6 +109,7 @@ class _EditArchivedGiftScreenState extends State<EditArchivedGiftScreen> {
                     TextFormField(
                       controller: _archivedGiftNoteTextController,
                       maxLength: 300,
+                      autofocus: true,
                       decoration: const InputDecoration(
                         hintText: 'Notiz',
                         prefixIcon: IconTheme(

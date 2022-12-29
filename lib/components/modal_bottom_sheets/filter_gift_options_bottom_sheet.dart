@@ -20,6 +20,7 @@ class _ChangeFilterGiftOptionsBottomSheet extends State<FilterGiftOptionsBottomS
   void _changeGiftFilter(String giftFilter) {
     widget.giftFilterCallback(giftFilter);
     Navigator.pop(context);
+    FocusScope.of(context).unfocus();
   }
 
   @override

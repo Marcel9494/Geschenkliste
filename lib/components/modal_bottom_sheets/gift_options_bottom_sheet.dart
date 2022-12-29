@@ -22,6 +22,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
   void _showEditGiftScreen() {
     Navigator.pop(context);
     Navigator.pushNamed(context, '/createOrEditGift', arguments: CreateGiftScreenArguments(widget.giftBoxPosition));
+    FocusScope.of(context).unfocus();
   }
 
   void _showDeleteGiftDialog() async {
@@ -41,6 +42,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
               ),
               onPressed: () {
                 Navigator.pop(context);
+                FocusScope.of(context).unfocus();
               },
             ),
             ElevatedButton(
@@ -55,6 +57,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
                 Navigator.pop(context),
                 Navigator.pop(context),
                 Navigator.popAndPushNamed(context, '/bottomNavBar'),
+                FocusScope.of(context).unfocus(),
                 _showFlushbar('Geschenk wurde gelöscht.'),
               },
               child: const Text('Ja'),
@@ -81,6 +84,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
               ),
               onPressed: () {
                 Navigator.pop(context);
+                FocusScope.of(context).unfocus();
               },
             ),
             ElevatedButton(
@@ -93,6 +97,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
                 _archiveGift(),
                 Navigator.pop(context),
                 Navigator.popAndPushNamed(context, '/bottomNavBar'),
+                FocusScope.of(context).unfocus(),
               },
             ),
           ],

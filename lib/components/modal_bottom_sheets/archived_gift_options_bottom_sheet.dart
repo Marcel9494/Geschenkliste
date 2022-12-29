@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:geschenkliste/models/screen_arguments/archived_gift_screen_arguments.dart';
 import 'package:hive/hive.dart';
 
 import '/models/contact.dart';
+import '/models/screen_arguments/archive_screen_arguments.dart';
+import '/models/screen_arguments/archived_gift_screen_arguments.dart';
 
 class ArchivedGiftOptionsBottomSheet extends StatefulWidget {
   final int contactBoxPosition;
   final int archivedGiftIndex;
+  final Contact contact;
 
   const ArchivedGiftOptionsBottomSheet({
     Key? key,
     required this.contactBoxPosition,
     required this.archivedGiftIndex,
+    required this.contact,
   }) : super(key: key);
 
   @override
@@ -46,8 +49,7 @@ class _ArchivedGiftOptionsBottomSheetState extends State<ArchivedGiftOptionsBott
                 _deleteArchivedGift(),
                 Navigator.pop(context),
                 Navigator.pop(context),
-                // TODO hier weitermachen und auf Archiv Seite leiten
-                Navigator.popAndPushNamed(context, '/bottomNavBar'),
+                Navigator.popAndPushNamed(context, '/archive', arguments: ArchiveScreenArguments(widget.contact)),
               },
               child: const Text('Ja'),
             ),
@@ -72,7 +74,6 @@ class _ArchivedGiftOptionsBottomSheetState extends State<ArchivedGiftOptionsBott
   }
 
   void _editArchievedGiftNote() {
-    Navigator.pop(context);
     Navigator.popAndPushNamed(
       context,
       '/editArchivedGift',

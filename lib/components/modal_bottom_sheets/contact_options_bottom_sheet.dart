@@ -27,11 +27,13 @@ class _ContactOptionsBottomSheetState extends State<ContactOptionsBottomSheet> {
   void _navigateToArchiveScreen(Contact contact) {
     Navigator.pop(context);
     Navigator.pushNamed(context, '/archive', arguments: ArchiveScreenArguments(contact));
+    FocusScope.of(context).unfocus();
   }
 
   void _showEditContactScreen() {
     Navigator.pop(context);
     Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(widget.contactBoxPosition));
+    FocusScope.of(context).unfocus();
   }
 
   void _deleteContact() async {
@@ -51,6 +53,7 @@ class _ContactOptionsBottomSheetState extends State<ContactOptionsBottomSheet> {
               ),
               onPressed: () {
                 Navigator.pop(context);
+                FocusScope.of(context).unfocus();
               },
             ),
             ElevatedButton(
@@ -65,6 +68,7 @@ class _ContactOptionsBottomSheetState extends State<ContactOptionsBottomSheet> {
                 Navigator.pop(context),
                 Navigator.pop(context),
                 Navigator.popAndPushNamed(context, '/bottomNavBar'),
+                FocusScope.of(context).unfocus(),
               },
               child: const Text('Ja'),
             ),
