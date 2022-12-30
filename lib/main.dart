@@ -20,6 +20,7 @@ import '/models/screen_arguments/create_contact_screen_arguments.dart';
 import '/models/screen_arguments/create_gift_screen_arguments.dart';
 import '/models/screen_arguments/archive_screen_arguments.dart';
 import '/models/screen_arguments/archived_gift_screen_arguments.dart';
+import '/models/screen_arguments/bottom_nav_bar_screen_arguments.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -67,15 +68,22 @@ class MyApp extends StatelessWidget {
         Locale('de'),
       ],
       debugShowCheckedModeBanner: false,
-      home: const BottomNavBar(),
+      home: const BottomNavBar(selectedBottomNavBarIndex: 0),
       routes: {
         '/giftList': (context) => const GiftListScreen(),
         '/contactList': (context) => const ContactListScreen(),
-        '/bottomNavBar': (context) => const BottomNavBar(),
         '/settings': (context) => const SettingsScreen(),
       },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
+          case '/bottomNavBar':
+            final args = settings.arguments as BottomNavBarScreenArguments;
+            return MaterialPageRoute<String>(
+              builder: (BuildContext context) => BottomNavBar(
+                selectedBottomNavBarIndex: args.selectedBottomNavBarIndex,
+              ),
+              settings: settings,
+            );
           case '/createOrEditContact':
             final args = settings.arguments as CreateContactScreenArguments;
             return MaterialPageRoute<String>(

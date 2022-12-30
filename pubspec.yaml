@@ -41,6 +41,7 @@ dependencies:
   rounded_loading_button: ^2.0.8
   timelines: ^0.1.0
   another_flushbar: ^1.12.29
+  settings_ui: ^2.0.2
 
 dev_dependencies:
   flutter_test:

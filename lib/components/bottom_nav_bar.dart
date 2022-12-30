@@ -6,7 +6,12 @@ import '/screens/gift_list_screen.dart';
 import '/screens/contact_list_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({Key? key}) : super(key: key);
+  final int selectedBottomNavBarIndex;
+
+  const BottomNavBar({
+    Key? key,
+    required this.selectedBottomNavBarIndex,
+  }) : super(key: key);
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
@@ -14,11 +19,12 @@ class BottomNavBar extends StatefulWidget {
 
 class _BottomNavBarState extends State<BottomNavBar> {
   static List<Widget> _screens = [];
-  int _selectedIndex = 0;
+  late int _selectedIndex;
 
   @override
   initState() {
     super.initState();
+    _selectedIndex = widget.selectedBottomNavBarIndex;
     _screens = <Widget>[
       const GiftListScreen(),
       const ContactListScreen(),

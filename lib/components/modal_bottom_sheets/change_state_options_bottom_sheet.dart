@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:another_flushbar/flushbar.dart';
 
-import '../../models/contact.dart';
-import '../../models/enums/gift_state.dart';
-import '../../models/gift.dart';
+import '/models/gift.dart';
+import '/models/contact.dart';
+import '/models/enums/gift_state.dart';
+import '/models/screen_arguments/bottom_nav_bar_screen_arguments.dart';
 
 typedef UpdatedGiftStateCallback = void Function(String updatedGiftState);
 
@@ -96,7 +97,7 @@ class _ChangeStateOptionsBottomSheetState extends State<ChangeStateOptionsBottom
                 _archiveGift(),
                 Navigator.pop(context),
                 Navigator.pop(context),
-                Navigator.popAndPushNamed(context, '/bottomNavBar'),
+                Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(0)),
                 _showArchievedFlushbar(),
               },
             ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geschenkliste/models/screen_arguments/bottom_nav_bar_screen_arguments.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -87,7 +88,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
         Navigator.pop(context);
         Navigator.pop(context);
         // TODO auch wieder zurück auf Geschenk erstellen Seite leiten oder nur Navigator.pop(context)? Beide Fälle müssen abgedeckt werden.
-        Navigator.pushNamed(context, '/bottomNavBar');
+        Navigator.pushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(1));
       }
     });
   }

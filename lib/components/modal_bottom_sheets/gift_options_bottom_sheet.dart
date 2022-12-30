@@ -1,10 +1,11 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:another_flushbar/flushbar.dart';
 
 import '/models/gift.dart';
 import '/models/contact.dart';
 import '/models/screen_arguments/create_gift_screen_arguments.dart';
+import '/models/screen_arguments/bottom_nav_bar_screen_arguments.dart';
 
 class GiftOptionsBottomSheet extends StatefulWidget {
   final int giftBoxPosition;
@@ -56,7 +57,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
                 }),
                 Navigator.pop(context),
                 Navigator.pop(context),
-                Navigator.popAndPushNamed(context, '/bottomNavBar'),
+                Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(0)),
                 FocusScope.of(context).unfocus(),
                 _showFlushbar('Geschenk wurde gelöscht.'),
               },
@@ -96,7 +97,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
               onPressed: () => {
                 _archiveGift(),
                 Navigator.pop(context),
-                Navigator.popAndPushNamed(context, '/bottomNavBar'),
+                Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(0)),
                 FocusScope.of(context).unfocus(),
               },
             ),

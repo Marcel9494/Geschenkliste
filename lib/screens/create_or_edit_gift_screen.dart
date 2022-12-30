@@ -13,6 +13,7 @@ import '/models/contact.dart';
 import '/models/enums/events.dart';
 import '/models/enums/gift_state.dart';
 import '/models/screen_arguments/create_contact_screen_arguments.dart';
+import '/models/screen_arguments/bottom_nav_bar_screen_arguments.dart';
 
 import '/utils/date_formatter.dart';
 
@@ -157,7 +158,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
         FocusScope.of(context).requestFocus(FocusNode());
         Navigator.pop(context);
         Navigator.pop(context);
-        Navigator.pushNamed(context, '/bottomNavBar');
+        Navigator.pushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(0));
       }
     });
   }

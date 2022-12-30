@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import '/models/contact.dart';
 import '/models/screen_arguments/archive_screen_arguments.dart';
 import '/models/screen_arguments/create_contact_screen_arguments.dart';
+import '/models/screen_arguments/bottom_nav_bar_screen_arguments.dart';
 
 class ContactOptionsBottomSheet extends StatefulWidget {
   final int contactBoxPosition;
@@ -67,7 +68,7 @@ class _ContactOptionsBottomSheetState extends State<ContactOptionsBottomSheet> {
                 }),
                 Navigator.pop(context),
                 Navigator.pop(context),
-                Navigator.popAndPushNamed(context, '/bottomNavBar'),
+                Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(1)),
                 FocusScope.of(context).unfocus(),
               },
               child: const Text('Ja'),
