@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:settings_ui/settings_ui.dart';
+
+import '/models/screen_arguments/bottom_nav_bar_screen_arguments.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -9,6 +12,48 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  void _showDeleteAllDataDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Alle Daten löschen?'),
+          content: const Text('Wollen Sie wirklich alle Daten löschen?\nDie gelöschten Daten können nicht wiederhergestellt werden!'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Nein',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.red,
+                onPrimary: Colors.black87,
+              ),
+              onPressed: () => {
+                _deleteAllData(),
+              },
+              child: const Text('Ja'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteAllData() {
+    Hive.deleteFromDisk();
+    Navigator.pop(context);
+    Navigator.pop(context);
+    Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(0));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,24 +63,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: SettingsList(
         sections: [
           SettingsSection(
-            title: const Text('Allgemeines'),
-            tiles: <SettingsTile>[
-              SettingsTile.navigation(
-                leading: const Icon(Icons.send_rounded),
-                title: const Text('Feedback senden'),
-                description: const Text('Sende uns Feedback, Feature Wünsche oder Fehlerberichte.'),
-                trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16.0),
-              ),
-            ],
-          ),
-          SettingsSection(
             title: const Text('Konto'),
             tiles: <SettingsTile>[
               SettingsTile.navigation(
-                leading: const Icon(Icons.delete_forever),
+                leading: const Icon(Icons.delete_forever_rounded),
                 title: const Text('Alle Daten löschen'),
                 description: const Text('Gelöschte Daten können nicht wiederhergestellt werden.'),
                 trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16.0),
+                onPressed: (_) => {
+                  _showDeleteAllDataDialog(),
+                },
               ),
             ],
           ),

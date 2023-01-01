@@ -38,6 +38,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
   List<Event> events = [
     Event(eventname: Events.birthday.name),
+    Event(eventname: Events.wedding.name),
     Event(eventname: Events.christmas.name, eventDate: DateTime(2023, 12, 24)), // TODO 2023 variabel machen
     Event(eventname: Events.nicholas.name, eventDate: DateTime(2023, 12, 6)), // TODO 2023 variabel machen
     Event(eventname: Events.easter.name, eventDate: DateTime(2023, 4, 9)), // TODO 2023 variabel machen

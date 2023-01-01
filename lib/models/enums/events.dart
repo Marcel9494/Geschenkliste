@@ -1,6 +1,7 @@
 enum Events {
   anyDate,
   birthday,
+  wedding,
   christmas,
   nicholas,
   easter,
@@ -11,6 +12,8 @@ extension EventsExtension on Events {
     switch (this) {
       case Events.birthday:
         return 'Geburtstag';
+      case Events.wedding:
+        return 'Hochzeit';
       case Events.christmas:
         return 'Heiligabend';
       case Events.nicholas:
@@ -27,7 +30,9 @@ extension EventsExtension on Events {
   String get filterName {
     switch (this) {
       case Events.birthday:
-        return 'Geburtstag';
+        return 'Geburtstage';
+      case Events.wedding:
+        return 'Hochzeiten';
       case Events.christmas:
         return 'Heiligabend';
       case Events.nicholas:

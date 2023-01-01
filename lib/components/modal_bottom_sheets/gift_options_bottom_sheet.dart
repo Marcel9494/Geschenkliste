@@ -180,7 +180,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
             const Divider(height: 0, color: Colors.grey),
             ListTile(
               onTap: _showDeleteGiftDialog,
-              leading: const Icon(Icons.delete_rounded, color: Colors.cyanAccent),
+              leading: const Icon(Icons.delete_forever_rounded, color: Colors.cyanAccent),
               title: const Text('Löschen'),
             ),
             const Divider(height: 0, color: Colors.grey),

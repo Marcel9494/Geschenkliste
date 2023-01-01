@@ -189,8 +189,8 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
                       if (snapshot.hasError) {
                         return const CenteredText(text: 'Geschenkliste konnte nicht geladen werden.', divider: 2);
                       } else {
-                        if (gifts.isEmpty) {
-                          return const CenteredText(text: 'Noch keine Geschenke vorhanden.', divider: 2);
+                        if (gifts.isEmpty || Gift.checkIfFilteredGiftListIsEmpty(gifts)) {
+                          return const CenteredText(text: 'Keine Geschenke vorhanden.', divider: 2);
                         } else {
                           return Expanded(
                             child: RefreshIndicator(

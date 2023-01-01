@@ -9,6 +9,14 @@ class Event extends HiveObject {
   late String eventname;
   late DateTime? eventDate;
 
+  static List<String> getEventNames() {
+    List<String> eventList = [];
+    for (int i = 0; i < Events.values.length; i++) {
+      eventList.add(Events.values[i].name);
+    }
+    return eventList;
+  }
+
   static List<String> getEventFilterNames() {
     List<String> eventList = [];
     for (int i = 0; i < Events.values.length; i++) {
