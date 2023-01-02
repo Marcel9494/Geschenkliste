@@ -39,9 +39,9 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   List<Event> events = [
     Event(eventname: Events.birthday.name),
     Event(eventname: Events.wedding.name),
-    Event(eventname: Events.christmas.name, eventDate: DateTime(2023, 12, 24)), // TODO 2023 variabel machen
-    Event(eventname: Events.nicholas.name, eventDate: DateTime(2023, 12, 6)), // TODO 2023 variabel machen
-    Event(eventname: Events.easter.name, eventDate: DateTime(2023, 4, 9)), // TODO 2023 variabel machen
+    Event(eventname: Events.christmas.name, eventDate: DateTime(2023, 12, 24), currentDate: DateTime.now()),
+    Event(eventname: Events.nicholas.name, eventDate: DateTime(2023, 12, 6), currentDate: DateTime.now()),
+    Event(eventname: Events.easter.name, eventDate: DateTime(2023, 4, 9), currentDate: DateTime.now()),
     Event(eventname: Events.anyDate.name),
   ];
   List<String> eventNames = [];
@@ -214,7 +214,6 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                         controller: _giftnameTextController,
                         textAlignVertical: TextAlignVertical.center,
                         maxLength: 35,
-                        autofocus: true,
                         decoration: InputDecoration(
                           hintText: 'Geschenkname / Idee',
                           hintStyle: const TextStyle(color: Colors.white),
@@ -313,11 +312,11 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                             selectedEvent = newEvent!;
                             isContactEdited = true;
                             if (selectedEvent == Events.christmas.name) {
-                              _eventDateTextController.text = '24.12.${DateTime.now().year}';
+                              _eventDateTextController.text = dateFormatter.format(events[2].eventDate as DateTime);
                             } else if (selectedEvent == Events.nicholas.name) {
-                              _eventDateTextController.text = '06.12.${DateTime.now().year}';
+                              _eventDateTextController.text = dateFormatter.format(events[3].eventDate as DateTime);
                             } else if (selectedEvent == Events.easter.name) {
-                              _eventDateTextController.text = '09.04.${DateTime.now().year}';
+                              _eventDateTextController.text = dateFormatter.format(events[4].eventDate as DateTime);
                             }
                           });
                         },

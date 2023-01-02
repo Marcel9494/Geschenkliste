@@ -16,6 +16,41 @@ class Contact extends HiveObject {
   late int birthdayAge;
 
   Contact();
+
+  int getBirthdayAge() {
+    if (birthday == null) {
+      return 0;
+    }
+    if (birthday!.month >= DateTime.now().month) {
+      if (birthday!.day >= DateTime.now().day) {
+        return DateTime.now().year - birthday!.year;
+      }
+      return (DateTime.now().year + 1) - birthday!.year;
+    }
+    return (DateTime.now().year + 1) - birthday!.year;
+  }
+
+  DateTime getNextBirthday() {
+    if (birthday == null) {
+      return DateTime(1, 0, 0);
+    }
+    if (birthday!.month >= DateTime.now().month) {
+      if (birthday!.day >= DateTime.now().day) {
+        return DateTime(DateTime.now().year, birthday!.month, birthday!.day);
+      }
+      return DateTime(DateTime.now().year + 1, birthday!.month, birthday!.day);
+    }
+    return DateTime(DateTime.now().year + 1, birthday!.month, birthday!.day);
+  }
+
+  int getRemainingDaysToBirthday() {
+    if (birthday == null) {
+      return 9999;
+    }
+    DateTime eventDate = DateTime(DateTime.now().year + 1, birthday!.month, birthday!.day);
+    DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    return (eventDate.difference(today).inHours / 24).round() % 365; // TODO Schaltjahre mit berücksichtigen (366 Tage)
+  }
 }
 
 class ContactAdapter extends TypeAdapter<Contact> {

@@ -4,7 +4,18 @@ import '/models/enums/events.dart';
 
 @HiveType(typeId: 2)
 class Event extends HiveObject {
-  Event({required this.eventname, this.eventDate});
+  Event({required this.eventname, this.eventDate, currentDate}) {
+    if (eventDate == null) {
+      return;
+    }
+    if (eventDate!.month >= currentDate.month) {
+      if (eventDate!.day <= currentDate.day) {
+        eventDate = DateTime(currentDate.year + 1, eventDate!.month, eventDate!.day);
+        return;
+      }
+    }
+    eventDate = DateTime(currentDate.year, eventDate!.month, eventDate!.day);
+  }
 
   late String eventname;
   late DateTime? eventDate;

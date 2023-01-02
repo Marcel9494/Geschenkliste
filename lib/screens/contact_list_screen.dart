@@ -32,53 +32,18 @@ class _ContactListScreenState extends State<ContactListScreen> {
     var contactBox = await Hive.openBox('contacts');
     contacts.clear();
     for (int i = 0; i < contactBox.length; i++) {
-      Contact tempContact = contactBox.getAt(i);
-      if (tempContact.contactname.toLowerCase().contains(searchedContactname.toLowerCase())) {
+      Contact contact = contactBox.getAt(i);
+      if (contact.contactname.toLowerCase().contains(searchedContactname.toLowerCase())) {
         contacts.add(contactBox.getAt(i));
-        contacts[contactNumber].remainingDays = _getRemainingDaysToEvent(contactNumber);
-        contacts[contactNumber].nextBirthday = _getNextBirthday(contactNumber);
-        contacts[contactNumber].birthdayAge = _getBirthdayAge(contactNumber);
+        contacts[contactNumber].remainingDays = contact.getRemainingDaysToBirthday();
+        contacts[contactNumber].nextBirthday = contact.getNextBirthday();
+        contacts[contactNumber].birthdayAge = contact.getBirthdayAge();
         contacts[contactNumber].boxPosition = contactNumber;
         contactNumber++;
       }
     }
     contacts.sort((first, second) => first.remainingDays.compareTo(second.remainingDays));
     return contacts;
-  }
-
-  int _getRemainingDaysToEvent(final int index) {
-    if (contacts[index].birthday == null) {
-      return 9999;
-    }
-    DateTime eventDate = DateTime(DateTime.now().year + 1, contacts[index].birthday!.month, contacts[index].birthday!.day);
-    DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    return (eventDate.difference(today).inHours / 24).round() % 365; // TODO Schaltjahre mit berücksichtigen (366 Tage)
-  }
-
-  int _getBirthdayAge(final int index) {
-    if (contacts[index].birthday == null) {
-      return 0;
-    }
-    if (contacts[index].birthday!.month >= DateTime.now().month) {
-      if (contacts[index].birthday!.day >= DateTime.now().day) {
-        return DateTime.now().year - contacts[index].birthday!.year;
-      }
-      return (DateTime.now().year + 1) - contacts[index].birthday!.year;
-    }
-    return (DateTime.now().year + 1) - contacts[index].birthday!.year;
-  }
-
-  DateTime _getNextBirthday(final int index) {
-    if (contacts[index].birthday == null) {
-      return DateTime(1, 0, 0);
-    }
-    if (contacts[index].birthday!.month >= DateTime.now().month) {
-      if (contacts[index].birthday!.day >= DateTime.now().day) {
-        return DateTime(DateTime.now().year, contacts[index].birthday!.month, contacts[index].birthday!.day);
-      }
-      return DateTime(DateTime.now().year + 1, contacts[index].birthday!.month, contacts[index].birthday!.day);
-    }
-    return DateTime(DateTime.now().year + 1, contacts[index].birthday!.month, contacts[index].birthday!.day);
   }
 
   void _clearSearchField() {
