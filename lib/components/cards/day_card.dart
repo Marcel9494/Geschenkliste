@@ -8,6 +8,17 @@ class DayCard extends StatelessWidget {
     required this.days,
   }) : super(key: key);
 
+  Color _getRemainingDaysToBirthdayColor() {
+    if (days == 9999) {
+      return Colors.transparent;
+    } else if (days >= 14) {
+      return Colors.greenAccent;
+    } else if (days < 14 && days >= 1) {
+      return Colors.yellow.shade300;
+    }
+    return Colors.cyanAccent;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -19,16 +30,44 @@ class DayCard extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14.0),
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
-            child: Center(
-              child: Text(
-                days == 9999
-                    ? '-'
-                    : days == 0
-                        ? 'Heute'
-                        : 'Noch\n${days.toString()} ${days != 1 ? 'Tage' : 'Tag'}',
-                textAlign: TextAlign.center,
+          child: ClipPath(
+            clipper: ShapeBorderClipper(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: _getRemainingDaysToBirthdayColor(), width: 4)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+                child: Center(
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: days == 9999
+                        ? const TextSpan(
+                            style: TextStyle(color: Colors.grey),
+                            children: [
+                              TextSpan(text: '-'),
+                            ],
+                          )
+                        : TextSpan(
+                            style: const TextStyle(color: Colors.grey),
+                            children: [
+                              TextSpan(text: days == 0 ? '' : 'Noch:\n'),
+                              TextSpan(
+                                text: days == 0
+                                    ? 'Heute'
+                                    : days == 1
+                                        ? '$days Tag'
+                                        : '$days Tage',
+                                style: TextStyle(
+                                  color: _getRemainingDaysToBirthdayColor(),
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
               ),
             ),
           ),
