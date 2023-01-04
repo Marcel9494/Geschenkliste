@@ -44,7 +44,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
         break;
       }
     }
-    // TODO archivedGifts nach Eventdatum sortieren contactNames.sort((first, second) => first.compareTo(second));
+    archivedGifts.sort((first, second) => second.eventDate.compareTo(first.eventDate)); // neuste Geschenke zuerst
     return archivedGifts;
   }
 

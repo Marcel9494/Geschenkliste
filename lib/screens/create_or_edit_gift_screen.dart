@@ -48,7 +48,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   List<Contact> contacts = [];
   List<String> contactNames = [];
   List<String> giftStateList = [];
-  GiftStatus giftStatus = GiftStatus.idea;
+  GiftState giftStatus = GiftState.idea;
   String selectedEvent = '';
   String selectedContact = '';
   String selectedGiftState = '';
@@ -62,8 +62,8 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   @override
   initState() {
     super.initState();
-    for (int i = 0; i < GiftStatus.values.length; i++) {
-      giftStateList.add(GiftStatus.values[i].name);
+    for (int i = 0; i < GiftState.values.length; i++) {
+      giftStateList.add(GiftState.values[i].name);
     }
     selectedGiftState = giftStateList[0];
     for (int i = 0; i < events.length; i++) {
@@ -261,7 +261,8 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                             ),
                           ),
                           IconButton(
-                            onPressed: () => Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1)),
+                            // TODO hier weitermachen und Kontaktliste mit _getContactList() nach neuem Kontakt erstellen aktualisieren.
+                            onPressed: () => Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1, true)),
                             icon: const Icon(Icons.person_add_rounded),
                           ),
                         ],

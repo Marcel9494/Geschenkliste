@@ -33,7 +33,7 @@ class _ContactOptionsBottomSheetState extends State<ContactOptionsBottomSheet> {
 
   void _showEditContactScreen() {
     Navigator.pop(context);
-    Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(widget.contactBoxPosition));
+    Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(widget.contactBoxPosition, false));
     FocusScope.of(context).unfocus();
   }
 

@@ -1,20 +1,20 @@
-enum GiftStatus {
+enum GiftState {
   idea,
   bought,
   packed,
   gifted,
 }
 
-extension GiftStatusExtension on GiftStatus {
+extension GiftStateExtension on GiftState {
   String get name {
     switch (this) {
-      case GiftStatus.idea:
+      case GiftState.idea:
         return 'Idee';
-      case GiftStatus.bought:
+      case GiftState.bought:
         return 'Gekauft';
-      case GiftStatus.packed:
+      case GiftState.packed:
         return 'Verpackt';
-      case GiftStatus.gifted:
+      case GiftState.gifted:
         return 'Geschenkt';
       default:
         return '';

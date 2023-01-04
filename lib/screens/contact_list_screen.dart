@@ -111,7 +111,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
                     ),
                     IconButton(
                       onPressed: () => {
-                        Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1)),
+                        Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1, false)),
                         FocusScope.of(context).unfocus(),
                       },
                       icon: const Icon(

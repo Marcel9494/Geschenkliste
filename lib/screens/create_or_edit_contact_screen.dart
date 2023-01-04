@@ -16,10 +16,12 @@ import '/models/enums/events.dart';
 
 class CreateOrEditContactScreen extends StatefulWidget {
   final int contactBoxPosition;
+  final bool backToCreateGiftScreen;
 
   const CreateOrEditContactScreen({
     Key? key,
     required this.contactBoxPosition,
+    required this.backToCreateGiftScreen,
   }) : super(key: key);
 
   @override
@@ -86,9 +88,10 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
       if (mounted) {
         FocusScope.of(context).requestFocus(FocusNode());
         Navigator.pop(context);
-        Navigator.pop(context);
-        // TODO auch wieder zurück auf Geschenk erstellen Seite leiten oder nur Navigator.pop(context)? Beide Fälle müssen abgedeckt werden.
-        Navigator.pushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(1));
+        if (widget.backToCreateGiftScreen == false) {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(1));
+        }
       }
     });
   }

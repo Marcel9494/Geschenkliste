@@ -2,7 +2,7 @@ class ArchivedGift {
   late int index;
   late String giftname;
   late String eventname;
-  late String eventDate; // TODO Datentyp zu DateTime umändern?
+  late String eventDate;
   late String note;
   late String giftState;
 

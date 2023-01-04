@@ -89,6 +89,7 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute<String>(
               builder: (BuildContext context) => CreateOrEditContactScreen(
                 contactBoxPosition: args.contactBoxPosition,
+                backToCreateGiftScreen: args.backToCreateGiftScreen,
               ),
               settings: settings,
             );

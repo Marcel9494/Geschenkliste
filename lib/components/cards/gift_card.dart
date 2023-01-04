@@ -38,7 +38,7 @@ class _GiftCardState extends State<GiftCard> {
     var giftBox = await Hive.openBox('gifts');
     Gift gift = giftBox.getAt(widget.gift.boxPosition);
     for (int i = 0; i < isGiftStateSelected.length; i++) {
-      if (gift.giftState == GiftStatus.values[i].name) {
+      if (gift.giftState == GiftState.values[i].name) {
         isGiftStateSelected[i] = true;
       } else {
         isGiftStateSelected[i] = false;
@@ -48,27 +48,18 @@ class _GiftCardState extends State<GiftCard> {
   }
 
   Icon getIcon() {
-    if (widget.gift.giftState == GiftStatus.idea.name) {
+    if (widget.gift.giftState == GiftState.idea.name) {
       return Icon(Icons.tips_and_updates_rounded, size: 12.0, color: Colors.cyanAccent, key: ValueKey(widget.gift.giftState));
-    } else if (widget.gift.giftState == GiftStatus.bought.name) {
+    } else if (widget.gift.giftState == GiftState.bought.name) {
       return Icon(Icons.shopping_cart, size: 12.0, color: Colors.cyanAccent, key: ValueKey(widget.gift.giftState));
-    } else if (widget.gift.giftState == GiftStatus.packed.name) {
+    } else if (widget.gift.giftState == GiftState.packed.name) {
       return Icon(Icons.card_giftcard_rounded, size: 12.0, color: Colors.cyanAccent, key: ValueKey(widget.gift.giftState));
     }
     return Icon(Icons.volunteer_activism_rounded, size: 12.0, color: Colors.cyanAccent, key: ValueKey(widget.gift.giftState));
   }
 
-  int _getRemainingDaysToEvent() {
-    if (widget.gift.event.eventDate == null) {
-      return 9999;
-    }
-    DateTime eventDate = DateTime(DateTime.now().year + 1, widget.gift.event.eventDate!.month, widget.gift.event.eventDate!.day);
-    DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    return (eventDate.difference(today).inHours / 24).round() % 365; // TODO Schaltjahre mit berücksichtigen (366 Tage)
-  }
-
   Color _getRemainingDaysColor() {
-    int remainingDays = _getRemainingDaysToEvent();
+    int remainingDays = widget.gift.getRemainingDaysToEvent();
     if (remainingDays == 9999) {
       return Colors.cyanAccent;
     } else if (remainingDays >= 14) {
@@ -141,7 +132,7 @@ class _GiftCardState extends State<GiftCard> {
                         context: context,
                         builder: (context) => ChangeStateOptionsBottomSheet(
                           giftBoxPosition: widget.gift.boxPosition,
-                          updatedGiftStateCallback: (newGiftSate) => setState(() => widget.gift.giftState = newGiftSate),
+                          updatedGiftStateCallback: (newGiftState) => setState(() => widget.gift.giftState = newGiftState),
                         ),
                       ),
                     ),
@@ -216,22 +207,19 @@ class _GiftCardState extends State<GiftCard> {
                           color: Colors.grey,
                         ),
                       ),
-                      RichText(
-                        text: widget.gift.event.eventDate == null
-                            ? const TextSpan(children: [])
-                            : TextSpan(
-                                style: const TextStyle(color: Colors.grey),
-                                children: [
-                                  const TextSpan(text: 'Noch: '),
-                                  TextSpan(
-                                    text: _getRemainingDaysToEvent() == 1 ? '${_getRemainingDaysToEvent()} Tag' : '${_getRemainingDaysToEvent()} Tage',
-                                    style: TextStyle(
-                                      color: _getRemainingDaysColor(),
-                                    ),
+                      widget.gift.event.eventDate == null
+                          ? const Text('')
+                          : Row(
+                              children: [
+                                const Icon(Icons.timer_sharp, size: 16.0, color: Colors.grey),
+                                Text(
+                                  widget.gift.getRemainingDaysToEvent() == 1 ? ' ${widget.gift.getRemainingDaysToEvent()} Tag' : ' ${widget.gift.getRemainingDaysToEvent()} Tage',
+                                  style: TextStyle(
+                                    color: _getRemainingDaysColor(),
                                   ),
-                                ],
-                              ),
-                      ),
+                                ),
+                              ],
+                            ),
                     ],
                   ),
                 ),

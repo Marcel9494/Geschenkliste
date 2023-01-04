@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:geschenkliste/models/enums/gift_state.dart';
 import 'package:hive/hive.dart';
 
 import '/models/contact.dart';
@@ -11,6 +12,7 @@ import '/models/enums/events.dart';
 class Gift extends HiveObject {
   late int boxPosition;
   late bool showInFilteredList;
+  late int remainingDaysToEvent;
   @HiveField(0)
   late String giftname;
   @HiveField(1)
@@ -29,12 +31,12 @@ class Gift extends HiveObject {
     var giftBox = await Hive.openBox('gifts');
     gifts.clear();
     for (int i = 0; i < giftBox.length; i++) {
-      Gift tempGift = giftBox.getAt(i);
-      if (tempGift.contact.contactname.toLowerCase().contains(searchTerm.toLowerCase()) || tempGift.giftname.toLowerCase().contains(searchTerm.toLowerCase())) {
-        // TODO stateFilter um Alle erweitern?
-        if (stateFilter == 'Alle' || tempGift.giftState.toLowerCase().contains(stateFilter.toLowerCase())) {
+      Gift gift = giftBox.getAt(i);
+      if (gift.contact.contactname.toLowerCase().contains(searchTerm.toLowerCase()) || gift.giftname.toLowerCase().contains(searchTerm.toLowerCase())) {
+        if (stateFilter == 'Alle' || gift.giftState.toLowerCase().contains(stateFilter.toLowerCase())) {
           gifts.add(giftBox.getAt(i));
           gifts[giftNumber].boxPosition = giftNumber;
+          gifts[giftNumber].remainingDaysToEvent = gift.getRemainingDaysToEvent();
           if (eventFilter[selectedFilterIndex] == Events.anyDate.name) {
             gifts[giftNumber].showInFilteredList = true;
           } else if (gifts[giftNumber].event.eventname == eventFilter[selectedFilterIndex]) {
@@ -46,6 +48,7 @@ class Gift extends HiveObject {
         }
       }
     }
+    gifts.sort((first, second) => first.remainingDaysToEvent.compareTo(second.remainingDaysToEvent));
     return gifts;
   }
 
@@ -56,6 +59,19 @@ class Gift extends HiveObject {
       }
     }
     return true;
+  }
+
+  int getRemainingDaysToEvent() {
+    if (event.eventDate == null) {
+      return 9999;
+    }
+    DateTime eventDate = DateTime(DateTime.now().year + 1, event.eventDate!.month, event.eventDate!.day);
+    DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    int daysPerYear = 365;
+    if (event.eventDate!.year % 4 == 0) {
+      daysPerYear = 366; // Schaltjahr
+    }
+    return (eventDate.difference(today).inHours / 24).round() % daysPerYear;
   }
 }
 

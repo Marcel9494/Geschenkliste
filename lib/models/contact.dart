@@ -49,7 +49,11 @@ class Contact extends HiveObject {
     }
     DateTime eventDate = DateTime(DateTime.now().year + 1, birthday!.month, birthday!.day);
     DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    return (eventDate.difference(today).inHours / 24).round() % 365; // TODO Schaltjahre mit berücksichtigen (366 Tage)
+    int daysPerYear = 365;
+    if (birthday!.year % 4 == 0) {
+      daysPerYear = 366; // Schaltjahr
+    }
+    return (eventDate.difference(today).inHours / 24).round() % daysPerYear;
   }
 }
 

@@ -43,8 +43,8 @@ class _ChangeStateOptionsBottomSheetState extends State<ChangeStateOptionsBottom
       for (int i = 0; i < isGiftStateSelected.length; i++) {
         isGiftStateSelected[i] = i == giftStateIndex;
         if (i == giftStateIndex) {
-          updateGiftState(GiftStatus.values[i].name);
-          widget.updatedGiftStateCallback(GiftStatus.values[i].name);
+          updateGiftState(GiftState.values[i].name);
+          widget.updatedGiftStateCallback(GiftState.values[i].name);
         }
       }
       if (isGiftStateSelected[3]) {
@@ -174,25 +174,25 @@ class _ChangeStateOptionsBottomSheetState extends State<ChangeStateOptionsBottom
             ListTile(
               onTap: () => _changeGiftState(0),
               leading: const Icon(Icons.tips_and_updates_rounded, color: Colors.cyanAccent),
-              title: Text(GiftStatus.idea.name),
+              title: Text(GiftState.idea.name),
             ),
             const Divider(height: 0, color: Colors.grey),
             ListTile(
               onTap: () => _changeGiftState(1),
               leading: const Icon(Icons.shopping_cart, color: Colors.cyanAccent),
-              title: Text(GiftStatus.bought.name),
+              title: Text(GiftState.bought.name),
             ),
             const Divider(height: 0, color: Colors.grey),
             ListTile(
               onTap: () => _changeGiftState(2),
               leading: const Icon(Icons.card_giftcard_rounded, color: Colors.cyanAccent),
-              title: Text(GiftStatus.packed.name),
+              title: Text(GiftState.packed.name),
             ),
             const Divider(height: 0, color: Colors.grey),
             ListTile(
               onTap: () => _changeGiftState(3),
               leading: const Icon(Icons.volunteer_activism_rounded, color: Colors.cyanAccent),
-              title: Text(GiftStatus.gifted.name),
+              title: Text(GiftState.gifted.name),
             ),
           ],
         ),
