@@ -65,15 +65,6 @@ class _ContactCardState extends State<ContactCard> {
                       ),
                     ),
                     IconButton(
-                      onPressed: () => {
-                        Navigator.pushNamed(context, '/createOrEditGift', arguments: CreateGiftScreenArguments(-1)),
-                        FocusScope.of(context).unfocus(),
-                      },
-                      icon: const Icon(Icons.add_rounded),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                    IconButton(
                       onPressed: () => showCupertinoModalBottomSheet(
                         context: context,
                         builder: (context) => ContactOptionsBottomSheet(contactBoxPosition: widget.contact.boxPosition),

@@ -134,7 +134,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
     Flushbar(
       message: text,
       icon: const Icon(
-        Icons.info_rounded,
+        Icons.info_outline,
         size: 28.0,
         color: Colors.cyanAccent,
       ),
