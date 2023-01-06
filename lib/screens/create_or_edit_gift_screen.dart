@@ -41,7 +41,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     Event(eventname: Events.wedding.name),
     Event(eventname: Events.christmas.name, eventDate: DateTime(2023, 12, 24), currentDate: DateTime.now()),
     Event(eventname: Events.nicholas.name, eventDate: DateTime(2023, 12, 6), currentDate: DateTime.now()),
-    Event(eventname: Events.easter.name, eventDate: DateTime(2023, 4, 9), currentDate: DateTime.now()),
+    Event(eventname: Events.easter.name, currentDate: DateTime.now()),
     Event(eventname: Events.anyDate.name),
   ];
   List<String> eventNames = [];
