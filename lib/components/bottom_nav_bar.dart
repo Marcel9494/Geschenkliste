@@ -47,11 +47,26 @@ class _BottomNavBarState extends State<BottomNavBar> {
       ),
       floatingActionButton: Visibility(
         visible: !showFab,
-        child: FloatingActionButton(
-          onPressed: () => Navigator.pushNamed(context, '/createOrEditGift', arguments: CreateGiftScreenArguments(-1)),
-          child: const Icon(
-            Icons.add_rounded,
-            size: 28.0,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: FloatingActionButton(
+            onPressed: () => Navigator.pushNamed(context, '/createOrEditGift', arguments: CreateGiftScreenArguments(-1)),
+            child: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Colors.cyanAccent, Colors.cyan.shade700],
+                ),
+              ),
+              child: const Icon(
+                Icons.add_rounded,
+                size: 28.0,
+              ),
+            ),
           ),
         ),
       ),

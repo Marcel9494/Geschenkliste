@@ -69,7 +69,6 @@ class _ContactListScreenState extends State<ContactListScreen> {
         ),
         child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
@@ -111,7 +110,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
                     ),
                     IconButton(
                       onPressed: () => {
-                        Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1, false)),
+                        Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1, false, () => {})),
                         FocusScope.of(context).unfocus(),
                       },
                       icon: const Icon(

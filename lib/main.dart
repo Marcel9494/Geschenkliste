@@ -90,6 +90,7 @@ class MyApp extends StatelessWidget {
               builder: (BuildContext context) => CreateOrEditContactScreen(
                 contactBoxPosition: args.contactBoxPosition,
                 backToCreateGiftScreen: args.backToCreateGiftScreen,
+                callback: args.callback,
               ),
               settings: settings,
             );

@@ -96,11 +96,13 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     for (int i = 0; i < contactBox.length; i++) {
       contacts.add(contactBox.getAt(i));
       contactNames.add(contacts[i].contactname);
+      print(contacts[i].contactname);
     }
     contactNames.sort((first, second) => first.compareTo(second));
     setState(() {
       selectedContact = contactNames[0];
     });
+    print('Selected Contact $selectedContact');
     return contacts;
   }
 
@@ -174,8 +176,10 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   }
 
   void _clearEventDate() {
-    _eventDateTextController.text = '';
-    parsedEventDate = null;
+    setState(() {
+      _eventDateTextController.text = '';
+      parsedEventDate = null;
+    });
   }
 
   @override
@@ -262,7 +266,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                           ),
                           IconButton(
                             // TODO hier weitermachen und Kontaktliste mit _getContactList() nach neuem Kontakt erstellen aktualisieren.
-                            onPressed: () => Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1, true)),
+                            onPressed: () => Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1, true, _getContactList)),
                             icon: const Icon(Icons.person_add_rounded),
                           ),
                         ],
@@ -312,12 +316,16 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                           setState(() {
                             selectedEvent = newEvent!;
                             isContactEdited = true;
-                            if (selectedEvent == Events.christmas.name) {
+                            if (selectedEvent == Events.birthday.name) {
+                              _setBirthdayDateFromContact();
+                            } else if (selectedEvent == Events.christmas.name) {
                               _eventDateTextController.text = dateFormatter.format(events[2].eventDate as DateTime);
                             } else if (selectedEvent == Events.nicholas.name) {
                               _eventDateTextController.text = dateFormatter.format(events[3].eventDate as DateTime);
                             } else if (selectedEvent == Events.easter.name) {
                               _eventDateTextController.text = dateFormatter.format(events[4].eventDate as DateTime);
+                            } else if (selectedEvent == Events.wedding.name || selectedEvent == Events.anyDate.name) {
+                              _eventDateTextController.text = '';
                             }
                           });
                         },

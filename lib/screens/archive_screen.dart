@@ -44,7 +44,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
         break;
       }
     }
-    archivedGifts.sort((first, second) => second.eventDate.compareTo(first.eventDate)); // neuste Geschenke zuerst
+    archivedGifts.sort((first, second) => second.eventDate.compareTo(first.eventDate)); // neuste Geschenke zuerst in der Liste anzeigen
     return archivedGifts;
   }
 
@@ -78,7 +78,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                         color: Colors.grey.shade800,
                       ),
                       indicatorTheme: IndicatorThemeData(
-                        size: 16.0,
+                        size: 20.0,
                         color: Colors.cyanAccent.shade400,
                       ),
                     ),

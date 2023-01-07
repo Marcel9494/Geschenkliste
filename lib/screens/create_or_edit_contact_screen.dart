@@ -17,11 +17,13 @@ import '/models/enums/events.dart';
 class CreateOrEditContactScreen extends StatefulWidget {
   final int contactBoxPosition;
   final bool backToCreateGiftScreen;
+  final Function callback;
 
   const CreateOrEditContactScreen({
     Key? key,
     required this.contactBoxPosition,
     required this.backToCreateGiftScreen,
+    required this.callback,
   }) : super(key: key);
 
   @override
@@ -79,6 +81,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
     }
     if (widget.contactBoxPosition == -1) {
       _addNewContact();
+      widget.callback();
     } else {
       _updateContact();
       _updateGiftsFromContact();

@@ -20,7 +20,7 @@ class Event extends HiveObject {
     if (eventDate == null) {
       return;
     }
-    if (eventDate!.month >= currentDate.month) {
+    if (eventDate!.month <= currentDate.month) {
       if (eventDate!.day <= currentDate.day) {
         eventDate = DateTime(currentDate.year + 1, eventDate!.month, eventDate!.day);
         return;
