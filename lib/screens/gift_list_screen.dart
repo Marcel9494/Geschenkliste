@@ -200,19 +200,22 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
                                 return;
                               },
                               color: Colors.cyanAccent,
-                              child: ListView.builder(
-                                itemCount: gifts.length,
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                itemBuilder: (BuildContext context, int index) {
-                                  return gifts[index].showInFilteredList
-                                      ? FadeTransition(
-                                          opacity: _cardFadeInAnimation,
-                                          child: GiftCard(
-                                            gift: gifts[index],
-                                          ),
-                                        )
-                                      : const SizedBox.shrink();
-                                },
+                              child: ScrollConfiguration(
+                                behavior: ScrollingBehavior(),
+                                child: ListView.builder(
+                                  itemCount: gifts.length,
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return gifts[index].showInFilteredList
+                                        ? FadeTransition(
+                                            opacity: _cardFadeInAnimation,
+                                            child: GiftCard(
+                                              gift: gifts[index],
+                                            ),
+                                          )
+                                        : const SizedBox.shrink();
+                                  },
+                                ),
                               ),
                             ),
                           );

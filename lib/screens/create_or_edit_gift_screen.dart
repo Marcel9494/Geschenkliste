@@ -51,6 +51,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   GiftState giftStatus = GiftState.idea;
   String selectedEvent = '';
   String selectedContact = '';
+  String newContactname = '';
   String selectedGiftState = '';
   String giftnameErrorText = '';
   String contactnameErrorText = '';
@@ -91,30 +92,38 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   }
 
   Future<List<Contact>> _getContactList() async {
+    print(selectedContact);
     var contactBox = await Hive.openBox('contacts');
     contacts.clear();
+    contactNames.clear();
     for (int i = 0; i < contactBox.length; i++) {
       contacts.add(contactBox.getAt(i));
       contactNames.add(contacts[i].contactname);
-      print(contacts[i].contactname);
     }
     contactNames.sort((first, second) => first.compareTo(second));
     setState(() {
-      selectedContact = contactNames[0];
+      if (newContactname.isEmpty) {
+        selectedContact = contactNames[0];
+      } else {
+        for (int i = 0; i < contactNames.length; i++) {
+          if (newContactname == contactNames[i]) {
+            selectedContact = contactNames[i];
+          }
+        }
+      }
     });
-    print('Selected Contact $selectedContact');
     return contacts;
   }
 
   void _setBirthdayDateFromContact() async {
     for (int i = 0; i < contacts.length; i++) {
       if (selectedContact == contacts[i].contactname && contacts[i].birthday != null && contacts[i].nextBirthday != null) {
-        setState(() {
-          _eventDateTextController.text = dateFormatter.format(contacts[i].nextBirthday!);
-        });
+        _eventDateTextController.text = dateFormatter.format(contacts[i].nextBirthday!);
         break;
       }
+      _eventDateTextController.text = '';
     }
+    setState(() {});
   }
 
   void _createGift() async {
@@ -265,8 +274,8 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                             ),
                           ),
                           IconButton(
-                            // TODO hier weitermachen und Kontaktliste mit _getContactList() nach neuem Kontakt erstellen aktualisieren.
-                            onPressed: () => Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1, true, _getContactList)),
+                            onPressed: () => Navigator.pushNamed(context, '/createOrEditContact',
+                                arguments: CreateContactScreenArguments(-1, true, (contactname) => setState(() => newContactname = contactname))).then((_) => _getContactList()),
                             icon: const Icon(Icons.person_add_rounded),
                           ),
                         ],

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:geschenkliste/models/screen_arguments/bottom_nav_bar_screen_arguments.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -13,17 +12,20 @@ import '/utils/date_formatter.dart';
 import '/models/contact.dart';
 import '/models/gift.dart';
 import '/models/enums/events.dart';
+import '/models/screen_arguments/bottom_nav_bar_screen_arguments.dart';
+
+typedef void StringCallback(String newContactname);
 
 class CreateOrEditContactScreen extends StatefulWidget {
   final int contactBoxPosition;
   final bool backToCreateGiftScreen;
-  final Function callback;
+  final StringCallback newContactnameCallback;
 
   const CreateOrEditContactScreen({
     Key? key,
     required this.contactBoxPosition,
     required this.backToCreateGiftScreen,
-    required this.callback,
+    required this.newContactnameCallback,
   }) : super(key: key);
 
   @override
@@ -37,11 +39,11 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
   final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
   DateTime? parsedBirthdayDate;
   DateTime? formattedBirthday;
-  String contactnameText = '';
   String contactnameErrorText = '';
-  String birthdayDate = '';
   String birthdayDateErrorText = '';
   late Contact loadedContact;
+  String newContactname = '';
+  set string(String value) => setState(() => newContactname = value);
 
   Future<Contact> _getContactData() async {
     var contactBox = await Hive.openBox('contacts');
@@ -81,7 +83,6 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
     }
     if (widget.contactBoxPosition == -1) {
       _addNewContact();
-      widget.callback();
     } else {
       _updateContact();
       _updateGiftsFromContact();
@@ -94,6 +95,8 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
         if (widget.backToCreateGiftScreen == false) {
           Navigator.pop(context);
           Navigator.pushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(1));
+        } else {
+          widget.newContactnameCallback(_contactnameTextController.text.trim());
         }
       }
     });

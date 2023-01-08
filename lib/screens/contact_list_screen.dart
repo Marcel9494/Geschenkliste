@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
+import '/utils/scrolling_behavior.dart';
+
 import '/models/contact.dart';
 import '/models/screen_arguments/create_contact_screen_arguments.dart';
 
@@ -110,7 +112,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
                     ),
                     IconButton(
                       onPressed: () => {
-                        Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1, false, () => {})),
+                        Navigator.pushNamed(context, '/createOrEditContact', arguments: CreateContactScreenArguments(-1, false, (_) => {})),
                         FocusScope.of(context).unfocus(),
                       },
                       icon: const Icon(
@@ -149,57 +151,60 @@ class _ContactListScreenState extends State<ContactListScreen> {
                                 return;
                               },
                               color: Colors.cyanAccent,
-                              child: ListView.builder(
-                                itemCount: contacts.length,
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Column(
-                                    children: [
-                                      index == 0
-                                          ? Row(
-                                              children: [
-                                                Padding(
-                                                  padding: const EdgeInsets.fromLTRB(120.0, 12.0, 0.0, 12.0),
-                                                  child: Text(
-                                                    '${contacts[0].nextBirthday!.year} • ${dateFormatter.format(contacts[0].nextBirthday!)}',
-                                                    style: const TextStyle(
-                                                      fontSize: 21.0,
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          : const SizedBox.shrink(),
-                                      Row(
-                                        children: [
-                                          DayCard(days: contacts[index].remainingDays),
-                                          ContactCard(contact: contacts[index]),
-                                        ],
-                                      ),
-                                      index + 1 < contacts.length && contacts[index].nextBirthday != null && contacts[index + 1].nextBirthday != null
-                                          ? contacts[index].nextBirthday?.month != contacts[index + 1].nextBirthday?.month
-                                              ? Row(
-                                                  children: [
-                                                    Padding(
-                                                      padding: const EdgeInsets.fromLTRB(120.0, 12.0, 0.0, 12.0),
-                                                      child: Text(
-                                                        contacts[index + 1].nextBirthday!.year == 0
-                                                            ? 'Kein Geburtstag'
-                                                            : '${contacts[index + 1].nextBirthday!.year} • ${dateFormatter.format(contacts[index + 1].nextBirthday!)}',
-                                                        style: const TextStyle(
-                                                          fontSize: 21.0,
-                                                          fontWeight: FontWeight.bold,
-                                                        ),
+                              child: ScrollConfiguration(
+                                behavior: ScrollingBehavior(),
+                                child: ListView.builder(
+                                  itemCount: contacts.length,
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return Column(
+                                      children: [
+                                        index == 0
+                                            ? Row(
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.fromLTRB(120.0, 12.0, 0.0, 12.0),
+                                                    child: Text(
+                                                      '${contacts[0].nextBirthday!.year} • ${dateFormatter.format(contacts[0].nextBirthday!)}',
+                                                      style: const TextStyle(
+                                                        fontSize: 21.0,
+                                                        fontWeight: FontWeight.bold,
                                                       ),
                                                     ),
-                                                  ],
-                                                )
-                                              : const SizedBox.shrink()
-                                          : const SizedBox.shrink(),
-                                    ],
-                                  );
-                                },
+                                                  ),
+                                                ],
+                                              )
+                                            : const SizedBox.shrink(),
+                                        Row(
+                                          children: [
+                                            DayCard(days: contacts[index].remainingDays),
+                                            ContactCard(contact: contacts[index]),
+                                          ],
+                                        ),
+                                        index + 1 < contacts.length && contacts[index].nextBirthday != null && contacts[index + 1].nextBirthday != null
+                                            ? contacts[index].nextBirthday?.month != contacts[index + 1].nextBirthday?.month
+                                                ? Row(
+                                                    children: [
+                                                      Padding(
+                                                        padding: const EdgeInsets.fromLTRB(120.0, 12.0, 0.0, 12.0),
+                                                        child: Text(
+                                                          contacts[index + 1].nextBirthday!.year == 0
+                                                              ? 'Kein Geburtstag'
+                                                              : '${contacts[index + 1].nextBirthday!.year} • ${dateFormatter.format(contacts[index + 1].nextBirthday!)}',
+                                                          style: const TextStyle(
+                                                            fontSize: 21.0,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
+                                                : const SizedBox.shrink()
+                                            : const SizedBox.shrink(),
+                                      ],
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           );
