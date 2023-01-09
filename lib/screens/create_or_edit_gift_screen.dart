@@ -58,6 +58,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   String eventDateErrorText = '';
   DateTime? parsedEventDate;
   bool isContactEdited = false;
+  bool isEventDateEdited = false;
   late Gift gift;
 
   @override
@@ -188,6 +189,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     setState(() {
       _eventDateTextController.text = '';
       parsedEventDate = null;
+      isEventDateEdited = true;
     });
   }
 
@@ -200,7 +202,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
       body: FutureBuilder<Gift>(
         future: widget.giftBoxPosition == -1
             ? null
-            : isContactEdited
+            : isContactEdited || isEventDateEdited
                 ? null
                 : _getGiftData(),
         builder: (BuildContext context, AsyncSnapshot<Gift> snapshot) {
@@ -379,7 +381,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                             locale: const Locale('de', 'DE'),
                             initialDate: DateTime.now(),
                             initialDatePickerMode: DatePickerMode.year,
-                            firstDate: DateTime(1900),
+                            firstDate: DateTime.now(),
                             lastDate: DateTime(2200),
                           );
                           _eventDateTextController.text = dateFormatter.format(parsedEventDate!);

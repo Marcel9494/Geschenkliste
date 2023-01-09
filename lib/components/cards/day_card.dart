@@ -11,9 +11,9 @@ class DayCard extends StatelessWidget {
   Color _getRemainingDaysToBirthdayColor() {
     if (days == 9999) {
       return Colors.transparent;
-    } else if (days >= 14) {
+    } else if (days > 14) {
       return Colors.greenAccent;
-    } else if (days < 14 && days >= 1) {
+    } else if (days <= 14 && days >= 1) {
       return Colors.yellow.shade300;
     }
     return Colors.cyanAccent;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CenteredText extends StatelessWidget {
   final String text;
-  final int divider;
+  final double divider;
 
   const CenteredText({
     Key? key,

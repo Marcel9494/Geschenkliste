@@ -62,9 +62,9 @@ class _GiftCardState extends State<GiftCard> {
     int remainingDays = widget.gift.getRemainingDaysToEvent();
     if (remainingDays == 9999) {
       return Colors.cyanAccent;
-    } else if (remainingDays >= 14) {
+    } else if (remainingDays > 14) {
       return Colors.greenAccent;
-    } else if (remainingDays < 14 && remainingDays >= 1) {
+    } else if (remainingDays <= 14 && remainingDays >= 1) {
       return Colors.yellow.shade300;
     }
     return Colors.red.shade300;

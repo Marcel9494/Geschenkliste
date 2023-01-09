@@ -24,11 +24,18 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
   int selectedFilterIndex = 0;
   String giftFilter = 'Alle'; // TODO Eigenes Enum für Geschenkfilter anlegen oder in Geschenk Status integrieren?
   late Animation<double> _cardFadeInAnimation;
+  late AnimationController fadeInAnimation;
 
   @override
   void initState() {
     super.initState();
     eventFilter = Event.getEventFilterNames();
+  }
+
+  @override
+  dispose() {
+    fadeInAnimation.dispose();
+    super.dispose();
   }
 
   Future<List<Gift>> _getGiftList() async {
@@ -38,7 +45,7 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
   }
 
   void _startCardFadeInAnimation() {
-    AnimationController fadeInAnimation = AnimationController(
+    fadeInAnimation = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
@@ -190,7 +197,7 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
                         return const CenteredText(text: 'Geschenkliste konnte nicht geladen werden.', divider: 2);
                       } else {
                         if (gifts.isEmpty || Gift.checkIfFilteredGiftListIsEmpty(gifts)) {
-                          return const CenteredText(text: 'Keine Geschenke vorhanden.', divider: 2);
+                          return const CenteredText(text: 'Noch keine Geschenke vorhanden.', divider: 2);
                         } else {
                           return Expanded(
                             child: RefreshIndicator(

@@ -6,7 +6,6 @@ import '../modal_bottom_sheets/contact_options_bottom_sheet.dart';
 
 import '/models/contact.dart';
 import '/models/screen_arguments/archive_screen_arguments.dart';
-import '/models/screen_arguments/create_gift_screen_arguments.dart';
 
 class ContactCard extends StatefulWidget {
   final Contact contact;

@@ -138,10 +138,10 @@ class _ContactListScreenState extends State<ContactListScreen> {
                       return const Center(child: CircularProgressIndicator(color: Colors.cyanAccent));
                     default:
                       if (snapshot.hasError) {
-                        return const CenteredText(text: 'Kontakte konnten nicht geladen werden.', divider: 2);
+                        return const CenteredText(text: 'Kontakte konnten nicht geladen werden.', divider: 1.5);
                       } else {
                         if (contacts.isEmpty) {
-                          return const CenteredText(text: 'Noch keine Kontakte vorhanden.', divider: 2);
+                          return const CenteredText(text: 'Noch keine Kontakte vorhanden.', divider: 1.5);
                         } else {
                           return Expanded(
                             child: RefreshIndicator(
@@ -159,13 +159,15 @@ class _ContactListScreenState extends State<ContactListScreen> {
                                   itemBuilder: (BuildContext context, int index) {
                                     return Column(
                                       children: [
-                                        index == 0
+                                        index == 0 //&& contacts[0].nextBirthday == null
                                             ? Row(
                                                 children: [
                                                   Padding(
                                                     padding: const EdgeInsets.fromLTRB(120.0, 12.0, 0.0, 12.0),
                                                     child: Text(
-                                                      '${contacts[0].nextBirthday!.year} • ${dateFormatter.format(contacts[0].nextBirthday!)}',
+                                                      contacts[0].nextBirthday!.year == 0
+                                                          ? 'Kein Geburtstag'
+                                                          : '${contacts[0].nextBirthday!.year} • ${dateFormatter.format(contacts[0].nextBirthday!)}',
                                                       style: const TextStyle(
                                                         fontSize: 21.0,
                                                         fontWeight: FontWeight.bold,
