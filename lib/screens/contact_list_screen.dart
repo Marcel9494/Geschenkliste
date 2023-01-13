@@ -159,7 +159,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
                                   itemBuilder: (BuildContext context, int index) {
                                     return Column(
                                       children: [
-                                        index == 0 //&& contacts[0].nextBirthday == null
+                                        index == 0
                                             ? Row(
                                                 children: [
                                                   Padding(
