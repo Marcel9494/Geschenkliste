@@ -91,6 +91,7 @@ class MyApp extends StatelessWidget {
                 contactBoxPosition: args.contactBoxPosition,
                 backToCreateGiftScreen: args.backToCreateGiftScreen,
                 newContactnameCallback: args.newContactnameCallback,
+                newBirthdayCallback: args.newBirthdayCallback,
               ),
               settings: settings,
             );

@@ -9,8 +9,8 @@ import '/components/buttons/save_button.dart';
 
 import '/utils/date_formatter.dart';
 
-import '/models/contact.dart';
 import '/models/gift.dart';
+import '/models/contact.dart';
 import '/models/enums/events.dart';
 import '/models/screen_arguments/bottom_nav_bar_screen_arguments.dart';
 
@@ -20,12 +20,14 @@ class CreateOrEditContactScreen extends StatefulWidget {
   final int contactBoxPosition;
   final bool backToCreateGiftScreen;
   final StringCallback newContactnameCallback;
+  final StringCallback newBirthdayCallback;
 
   const CreateOrEditContactScreen({
     Key? key,
     required this.contactBoxPosition,
     required this.backToCreateGiftScreen,
     required this.newContactnameCallback,
+    required this.newBirthdayCallback,
   }) : super(key: key);
 
   @override
@@ -97,6 +99,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
           Navigator.pushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(1));
         } else {
           widget.newContactnameCallback(_contactnameTextController.text.trim());
+          widget.newBirthdayCallback(_birthdayTextController.text.trim());
         }
       }
     });

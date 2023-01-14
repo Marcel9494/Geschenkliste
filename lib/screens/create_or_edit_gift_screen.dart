@@ -52,6 +52,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   String selectedEvent = '';
   String selectedContact = '';
   String newContactname = '';
+  String newBirthday = '';
   String selectedGiftState = '';
   String giftnameErrorText = '';
   String contactnameErrorText = '';
@@ -59,6 +60,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   DateTime? parsedEventDate;
   bool isContactEdited = false;
   bool isEventDateEdited = false;
+  bool isGiftInCreationProgress = false;
   late Gift gift;
 
   @override
@@ -72,33 +74,16 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
       eventNames.add(events[i].eventname);
     }
     selectedEvent = events[0].eventname;
-    _getContactList();
-  }
-
-  Future<Gift> _getGiftData() async {
-    var giftBox = await Hive.openBox('gifts');
-    gift = await giftBox.getAt(widget.giftBoxPosition);
-    _giftnameTextController.text = gift.giftname;
-    _contactnameTextController.text = gift.contact.contactname;
-    _notesTextController.text = gift.note;
-    // TODO hier weitermachen und EventDate Datenhaltung vereinfachen abgespeichertes Format in Hive ist jetzt: YYYY-MM-DD und Anzeige ist: DD.MM.YYYY
-    parsedEventDate = gift.event.eventDate;
-    if (gift.event.eventDate != null) {
-      _eventDateTextController.text = dateFormatter.format(gift.event.eventDate!);
-    }
-    selectedEvent = gift.event.eventname;
-    selectedContact = gift.contact.contactname;
-    selectedGiftState = gift.giftState;
-    return gift;
+    _getContactList().then((_) => _setBirthdayDateFromContact());
   }
 
   Future<List<Contact>> _getContactList() async {
-    print(selectedContact);
     var contactBox = await Hive.openBox('contacts');
     contacts.clear();
     contactNames.clear();
     for (int i = 0; i < contactBox.length; i++) {
       contacts.add(contactBox.getAt(i));
+      contacts[i].nextBirthday = contacts[i].getNextBirthday();
       contactNames.add(contacts[i].contactname);
     }
     contactNames.sort((first, second) => first.compareTo(second));
@@ -125,6 +110,23 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
       _eventDateTextController.text = '';
     }
     setState(() {});
+  }
+
+  Future<Gift> _getGiftData() async {
+    var giftBox = await Hive.openBox('gifts');
+    gift = await giftBox.getAt(widget.giftBoxPosition);
+    _giftnameTextController.text = gift.giftname;
+    _contactnameTextController.text = gift.contact.contactname;
+    _notesTextController.text = gift.note;
+    // TODO hier weitermachen und EventDate Datenhaltung vereinfachen abgespeichertes Format in Hive ist jetzt: YYYY-MM-DD und Anzeige ist: DD.MM.YYYY
+    parsedEventDate = gift.event.eventDate;
+    if (gift.event.eventDate != null) {
+      _eventDateTextController.text = dateFormatter.format(gift.event.eventDate!);
+    }
+    selectedEvent = gift.event.eventname;
+    selectedContact = gift.contact.contactname;
+    selectedGiftState = gift.giftState;
+    return gift;
   }
 
   void _createGift() async {
@@ -193,233 +195,290 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     });
   }
 
+  Future<bool> showGoBackDialog() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: widget.giftBoxPosition == -1 ? const Text('Geschenk erstellen wirklich abbrechen?') : const Text('Geschenk bearbeiten wirklich abbrechen?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Nein',
+                style: TextStyle(
+                  color: Colors.cyanAccent,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.cyanAccent,
+                onPrimary: Colors.black87,
+              ),
+              child: const Text('Ja'),
+              onPressed: () => {
+                Navigator.pop(context),
+                Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(0)),
+              },
+            ),
+          ],
+        );
+      },
+    );
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: widget.giftBoxPosition == -1 ? const Text('Geschenk erstellen') : const Text('Geschenk bearbeiten'),
-      ),
-      body: FutureBuilder<Gift>(
-        future: widget.giftBoxPosition == -1
-            ? null
-            : isContactEdited || isEventDateEdited
-                ? null
-                : _getGiftData(),
-        builder: (BuildContext context, AsyncSnapshot<Gift> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return const Center(child: CircularProgressIndicator(color: Colors.cyanAccent));
-            default:
-              if (snapshot.hasError) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Text(
-                      'Geschenk konnte nicht geladen werden.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16.0),
+    return WillPopScope(
+      onWillPop: isGiftInCreationProgress ? showGoBackDialog : null,
+      child: Scaffold(
+        appBar: AppBar(
+          title: widget.giftBoxPosition == -1 ? const Text('Geschenk erstellen') : const Text('Geschenk bearbeiten'),
+        ),
+        body: FutureBuilder<Gift>(
+          future: widget.giftBoxPosition == -1
+              ? null
+              : isContactEdited || isEventDateEdited
+                  ? null
+                  : _getGiftData(),
+          builder: (BuildContext context, AsyncSnapshot<Gift> snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return const Center(child: CircularProgressIndicator(color: Colors.cyanAccent));
+              default:
+                if (snapshot.hasError) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Text(
+                        'Geschenk konnte nicht geladen werden.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16.0),
+                      ),
                     ),
-                  ),
-                );
-              } else {
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        controller: _giftnameTextController,
-                        textAlignVertical: TextAlignVertical.center,
-                        maxLength: 35,
-                        decoration: InputDecoration(
-                          hintText: 'Geschenkname / Idee',
-                          hintStyle: const TextStyle(color: Colors.white),
-                          contentPadding: const EdgeInsets.only(top: 2.0),
-                          prefixIcon: const IconTheme(
-                            data: IconThemeData(color: Colors.grey),
-                            child: Icon(Icons.card_giftcard_rounded),
-                          ),
-                          focusedBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
-                          ),
-                          counterText: '',
-                          errorText: giftnameErrorText.isEmpty ? null : giftnameErrorText,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              value: selectedContact,
-                              icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                              elevation: 16,
-                              isExpanded: true,
-                              decoration: const InputDecoration(
-                                prefixIcon: Icon(Icons.person_rounded),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
-                                ),
-                              ),
-                              onChanged: (String? contact) {
-                                setState(() {
-                                  selectedContact = contact!;
-                                  isContactEdited = true;
-                                  if (selectedEvent == Events.birthday.name) {
-                                    _setBirthdayDateFromContact();
-                                  }
-                                });
-                              },
-                              items: contactNames.map<DropdownMenuItem<String>>((String contact) {
-                                return DropdownMenuItem<String>(
-                                  value: contact,
-                                  child: Text(contact),
-                                );
-                              }).toList(),
+                  );
+                } else {
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _giftnameTextController,
+                          textAlignVertical: TextAlignVertical.center,
+                          maxLength: 35,
+                          decoration: InputDecoration(
+                            hintText: 'Geschenkname / Idee',
+                            hintStyle: const TextStyle(color: Colors.white),
+                            contentPadding: const EdgeInsets.only(top: 2.0),
+                            prefixIcon: const IconTheme(
+                              data: IconThemeData(color: Colors.grey),
+                              child: Icon(Icons.card_giftcard_rounded),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () => Navigator.pushNamed(context, '/createOrEditContact',
-                                arguments: CreateContactScreenArguments(-1, true, (contactname) => setState(() => newContactname = contactname))).then((_) => _getContactList()),
-                            icon: const Icon(Icons.person_add_rounded),
-                          ),
-                        ],
-                      ),
-                      DropdownButtonFormField<String>(
-                        value: selectedGiftState,
-                        icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                        elevation: 16,
-                        isExpanded: true,
-                        decoration: const InputDecoration(
-                          prefixIcon: Padding(
-                            padding: EdgeInsets.only(left: 4.0),
-                            child: Icon(Icons.tips_and_updates_rounded),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
-                          ),
-                        ),
-                        onChanged: (String? newGiftState) {
-                          setState(() {
-                            selectedGiftState = newGiftState!;
-                            isContactEdited = true;
-                          });
-                        },
-                        items: giftStateList.map<DropdownMenuItem<String>>((String event) {
-                          return DropdownMenuItem<String>(
-                            value: event,
-                            child: Text(event),
-                          );
-                        }).toList(),
-                      ),
-                      DropdownButtonFormField<String>(
-                        value: selectedEvent,
-                        icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                        elevation: 16,
-                        isExpanded: true,
-                        decoration: const InputDecoration(
-                          prefixIcon: Padding(
-                            padding: EdgeInsets.only(left: 4.0),
-                            child: Icon(Icons.event_rounded),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
-                          ),
-                        ),
-                        onChanged: (String? newEvent) {
-                          setState(() {
-                            selectedEvent = newEvent!;
-                            isContactEdited = true;
-                            if (selectedEvent == Events.birthday.name) {
-                              _setBirthdayDateFromContact();
-                            } else if (selectedEvent == Events.christmas.name) {
-                              _eventDateTextController.text = dateFormatter.format(events[2].eventDate as DateTime);
-                            } else if (selectedEvent == Events.nicholas.name) {
-                              _eventDateTextController.text = dateFormatter.format(events[3].eventDate as DateTime);
-                            } else if (selectedEvent == Events.easter.name) {
-                              _eventDateTextController.text = dateFormatter.format(events[4].eventDate as DateTime);
-                            } else if (selectedEvent == Events.wedding.name || selectedEvent == Events.anyDate.name) {
-                              _eventDateTextController.text = '';
-                            }
-                          });
-                        },
-                        items: eventNames.map<DropdownMenuItem<String>>((String event) {
-                          return DropdownMenuItem<String>(
-                            value: event,
-                            child: Text(event),
-                          );
-                        }).toList(),
-                      ),
-                      TextFormField(
-                        controller: _eventDateTextController,
-                        maxLength: 10,
-                        readOnly: true,
-                        textAlignVertical: TextAlignVertical.center,
-                        decoration: InputDecoration(
-                          hintText: 'Eventdatum',
-                          hintStyle: const TextStyle(color: Colors.white),
-                          prefixIcon: const IconTheme(
-                            data: IconThemeData(color: Colors.grey),
-                            child: Padding(
-                              padding: EdgeInsets.only(left: 6.0),
-                              child: Icon(Icons.edit_calendar_rounded),
+                            focusedBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
                             ),
+                            counterText: '',
+                            errorText: giftnameErrorText.isEmpty ? null : giftnameErrorText,
                           ),
-                          suffixIcon: _eventDateTextController.text.isEmpty
-                              ? null
-                              : IconTheme(
-                                  data: const IconThemeData(color: Colors.cyanAccent),
-                                  child: IconButton(
-                                    onPressed: _clearEventDate,
-                                    icon: const Icon(Icons.highlight_remove_rounded),
+                          onChanged: (_) => {
+                            setState(() {
+                              isGiftInCreationProgress = true;
+                            }),
+                          },
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                value: selectedContact,
+                                icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                                elevation: 16,
+                                isExpanded: true,
+                                decoration: const InputDecoration(
+                                  prefixIcon: Icon(Icons.person_rounded),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
                                   ),
                                 ),
-                          counterText: '',
-                          errorText: eventDateErrorText.isEmpty ? null : eventDateErrorText,
+                                onChanged: (String? contact) {
+                                  setState(() {
+                                    selectedContact = contact!;
+                                    isContactEdited = true;
+                                    isGiftInCreationProgress = true;
+                                    if (selectedEvent == Events.birthday.name) {
+                                      _setBirthdayDateFromContact();
+                                    }
+                                  });
+                                },
+                                items: contactNames.map<DropdownMenuItem<String>>((String contact) {
+                                  return DropdownMenuItem<String>(
+                                    value: contact,
+                                    child: Text(contact),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () => Navigator.pushNamed(context, '/createOrEditContact',
+                                      arguments: CreateContactScreenArguments(
+                                          -1, true, (contactname) => setState(() => newContactname = contactname), (birthday) => setState(() => newBirthday = birthday)))
+                                  .then((_) => _getContactList().then((_) => _setBirthdayDateFromContact())),
+                              icon: const Icon(Icons.person_add_rounded),
+                            ),
+                          ],
                         ),
-                        onTap: () async {
-                          FocusScope.of(context).requestFocus(FocusNode());
-                          parsedEventDate = await showDatePicker(
-                            context: context,
-                            locale: const Locale('de', 'DE'),
-                            initialDate: DateTime.now(),
-                            initialDatePickerMode: DatePickerMode.year,
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime(2200),
-                          );
-                          _eventDateTextController.text = dateFormatter.format(parsedEventDate!);
-                          isContactEdited = true;
-                        },
-                      ),
-                      TextFormField(
-                        controller: _notesTextController,
-                        textAlignVertical: TextAlignVertical.center,
-                        maxLength: 300,
-                        decoration: const InputDecoration(
-                          hintText: 'Notizen',
-                          hintStyle: TextStyle(color: Colors.white),
-                          contentPadding: EdgeInsets.only(top: 2.0),
-                          prefixIcon: Padding(
-                            padding: EdgeInsets.only(left: 4.0),
-                            child: IconTheme(
-                              data: IconThemeData(color: Colors.grey),
-                              child: Icon(Icons.sticky_note_2_rounded),
+                        DropdownButtonFormField<String>(
+                          value: selectedGiftState,
+                          icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                          elevation: 16,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            prefixIcon: Padding(
+                              padding: EdgeInsets.only(left: 4.0),
+                              child: Icon(Icons.tips_and_updates_rounded),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
                             ),
                           ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
-                          ),
-                          counterText: '',
+                          onChanged: (String? newGiftState) {
+                            setState(() {
+                              selectedGiftState = newGiftState!;
+                              isContactEdited = true;
+                              isGiftInCreationProgress = true;
+                            });
+                          },
+                          items: giftStateList.map<DropdownMenuItem<String>>((String event) {
+                            return DropdownMenuItem<String>(
+                              value: event,
+                              child: Text(event),
+                            );
+                          }).toList(),
                         ),
-                      ),
-                      SaveButton(
-                        boxPosition: widget.giftBoxPosition,
-                        callback: _createGift,
-                        buttonController: _btnController,
-                      ),
-                    ],
-                  ),
-                );
-              }
-          }
-        },
+                        DropdownButtonFormField<String>(
+                          value: selectedEvent,
+                          icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                          elevation: 16,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            prefixIcon: Padding(
+                              padding: EdgeInsets.only(left: 4.0),
+                              child: Icon(Icons.event_rounded),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
+                            ),
+                          ),
+                          onChanged: (String? newEvent) {
+                            setState(() {
+                              selectedEvent = newEvent!;
+                              isContactEdited = true;
+                              isGiftInCreationProgress = true;
+                              if (selectedEvent == Events.birthday.name) {
+                                _setBirthdayDateFromContact();
+                              } else if (selectedEvent == Events.christmas.name) {
+                                _eventDateTextController.text = dateFormatter.format(events[2].eventDate as DateTime);
+                              } else if (selectedEvent == Events.nicholas.name) {
+                                _eventDateTextController.text = dateFormatter.format(events[3].eventDate as DateTime);
+                              } else if (selectedEvent == Events.easter.name) {
+                                _eventDateTextController.text = dateFormatter.format(events[4].eventDate as DateTime);
+                              } else if (selectedEvent == Events.wedding.name || selectedEvent == Events.anyDate.name) {
+                                _eventDateTextController.text = '';
+                              }
+                            });
+                          },
+                          items: eventNames.map<DropdownMenuItem<String>>((String event) {
+                            return DropdownMenuItem<String>(
+                              value: event,
+                              child: Text(event),
+                            );
+                          }).toList(),
+                        ),
+                        TextFormField(
+                          controller: _eventDateTextController,
+                          maxLength: 10,
+                          readOnly: true,
+                          textAlignVertical: TextAlignVertical.center,
+                          decoration: InputDecoration(
+                            hintText: 'Eventdatum',
+                            hintStyle: const TextStyle(color: Colors.white),
+                            prefixIcon: const IconTheme(
+                              data: IconThemeData(color: Colors.grey),
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 6.0),
+                                child: Icon(Icons.edit_calendar_rounded),
+                              ),
+                            ),
+                            suffixIcon: _eventDateTextController.text.isEmpty
+                                ? null
+                                : IconTheme(
+                                    data: const IconThemeData(color: Colors.cyanAccent),
+                                    child: IconButton(
+                                      onPressed: _clearEventDate,
+                                      icon: const Icon(Icons.highlight_remove_rounded),
+                                    ),
+                                  ),
+                            counterText: '',
+                            errorText: eventDateErrorText.isEmpty ? null : eventDateErrorText,
+                          ),
+                          onTap: () async {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            parsedEventDate = await showDatePicker(
+                              context: context,
+                              locale: const Locale('de', 'DE'),
+                              initialDate: DateTime.now(),
+                              initialDatePickerMode: DatePickerMode.day,
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime(2100),
+                            );
+                            _eventDateTextController.text = dateFormatter.format(parsedEventDate!);
+                            isContactEdited = true;
+                            setState(() {
+                              isGiftInCreationProgress = true;
+                            });
+                          },
+                        ),
+                        TextFormField(
+                          controller: _notesTextController,
+                          textAlignVertical: TextAlignVertical.center,
+                          maxLength: 300,
+                          decoration: const InputDecoration(
+                            hintText: 'Notizen',
+                            hintStyle: TextStyle(color: Colors.white),
+                            contentPadding: EdgeInsets.only(top: 2.0),
+                            prefixIcon: Padding(
+                              padding: EdgeInsets.only(left: 4.0),
+                              child: IconTheme(
+                                data: IconThemeData(color: Colors.grey),
+                                child: Icon(Icons.sticky_note_2_rounded),
+                              ),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
+                            ),
+                            counterText: '',
+                          ),
+                          onChanged: (_) => {
+                            setState(() {
+                              isGiftInCreationProgress = true;
+                            }),
+                          },
+                        ),
+                        SaveButton(
+                          boxPosition: widget.giftBoxPosition,
+                          callback: _createGift,
+                          buttonController: _btnController,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+            }
+          },
+        ),
       ),
     );
   }

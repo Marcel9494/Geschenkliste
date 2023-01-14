@@ -8,6 +8,7 @@ import '../modal_bottom_sheets/change_state_options_bottom_sheet.dart';
 
 import '/models/gift.dart';
 import '/models/enums/gift_state.dart';
+import '/models/screen_arguments/create_gift_screen_arguments.dart';
 
 class GiftCard extends StatefulWidget {
   final Gift gift;
@@ -74,156 +75,162 @@ class _GiftCardState extends State<GiftCard> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 6.0),
-      child: Card(
-        color: const Color(0x0fffffff),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14.0),
-        ),
-        child: ClipPath(
-          clipper: ShapeBorderClipper(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
+      child: GestureDetector(
+        onTap: () => {
+          Navigator.pushNamed(context, '/createOrEditGift', arguments: CreateGiftScreenArguments(widget.gift.boxPosition)),
+          FocusScope.of(context).unfocus(),
+        },
+        child: Card(
+          color: const Color(0x0fffffff),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14.0),
           ),
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(left: BorderSide(color: _getRemainingDaysColor(), width: 5)),
+          child: ClipPath(
+            clipper: ShapeBorderClipper(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    GestureDetector(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: Chip(
-                          labelPadding: const EdgeInsets.symmetric(vertical: -3.0, horizontal: 5.0),
-                          avatar: CircleAvatar(
-                            backgroundColor: Colors.grey.shade800,
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 600),
-                              transitionBuilder: (Widget child, Animation<double> animation) {
-                                return ScaleTransition(scale: animation, child: child);
-                              },
-                              child: getIcon(),
-                            ),
-                          ),
-                          label: SizedBox(
-                            width: 80.0,
-                            child: Center(
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(left: BorderSide(color: _getRemainingDaysColor(), width: 5)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      GestureDetector(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: Chip(
+                            labelPadding: const EdgeInsets.symmetric(vertical: -3.0, horizontal: 5.0),
+                            avatar: CircleAvatar(
+                              backgroundColor: Colors.grey.shade800,
                               child: AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 600),
                                 transitionBuilder: (Widget child, Animation<double> animation) {
                                   return ScaleTransition(scale: animation, child: child);
                                 },
-                                child: Text(
-                                  widget.gift.giftState,
-                                  key: ValueKey(widget.gift.giftState),
-                                  style: const TextStyle(
-                                    letterSpacing: 1.0,
-                                    color: Colors.white,
+                                child: getIcon(),
+                              ),
+                            ),
+                            label: SizedBox(
+                              width: 80.0,
+                              child: Center(
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 600),
+                                  transitionBuilder: (Widget child, Animation<double> animation) {
+                                    return ScaleTransition(scale: animation, child: child);
+                                  },
+                                  child: Text(
+                                    widget.gift.giftState,
+                                    key: ValueKey(widget.gift.giftState),
+                                    style: const TextStyle(
+                                      letterSpacing: 1.0,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      onTap: () => showCupertinoModalBottomSheet(
-                        context: context,
-                        builder: (context) => ChangeStateOptionsBottomSheet(
-                          giftBoxPosition: widget.gift.boxPosition,
-                          updatedGiftStateCallback: (newGiftState) => setState(() => widget.gift.giftState = newGiftState),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(14.0, 0.0, 10.0, 0.0),
-                        child: Text(
-                          'Für ${widget.gift.contact.contactname}',
-                          overflow: TextOverflow.fade,
-                          softWrap: false,
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
+                        onTap: () => showCupertinoModalBottomSheet(
+                          context: context,
+                          builder: (context) => ChangeStateOptionsBottomSheet(
+                            giftBoxPosition: widget.gift.boxPosition,
+                            updatedGiftStateCallback: (newGiftState) => setState(() => widget.gift.giftState = newGiftState),
                           ),
                         ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () => showCupertinoModalBottomSheet(
-                        context: context,
-                        builder: (context) => GiftOptionsBottomSheet(giftBoxPosition: widget.gift.boxPosition),
-                      ),
-                      icon: const Icon(Icons.more_vert),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0, left: 20.0),
-                  child: Text(
-                    widget.gift.giftname,
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 22.0, left: 20.0, bottom: 16.0),
-                  child: Text(
-                    widget.gift.note.isEmpty ? 'Notizen: -' : 'Notizen: ${widget.gift.note}',
-                    style: const TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 6.0, left: 20.0, bottom: 16.0, right: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        widget.gift.event.eventname,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Text(
-                        widget.gift.event.eventDate == null ? '' : '•',
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Text(
-                        eventDateString,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Text(
-                        widget.gift.event.eventDate == null ? '' : '•',
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-                      widget.gift.event.eventDate == null
-                          ? const Text('')
-                          : Row(
-                              children: [
-                                const Icon(Icons.timer_sharp, size: 16.0, color: Colors.grey),
-                                Text(
-                                  widget.gift.getRemainingDaysToEvent() == 1 ? ' ${widget.gift.getRemainingDaysToEvent()} Tag' : ' ${widget.gift.getRemainingDaysToEvent()} Tage',
-                                  style: TextStyle(
-                                    color: _getRemainingDaysColor(),
-                                  ),
-                                ),
-                              ],
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(14.0, 0.0, 10.0, 0.0),
+                          child: Text(
+                            'Für ${widget.gift.contact.contactname}',
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
                             ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => showCupertinoModalBottomSheet(
+                          context: context,
+                          builder: (context) => GiftOptionsBottomSheet(giftBoxPosition: widget.gift.boxPosition),
+                        ),
+                        icon: const Icon(Icons.more_vert),
+                      ),
                     ],
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0, left: 20.0),
+                    child: Text(
+                      widget.gift.giftname,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 22.0, left: 20.0, bottom: 16.0),
+                    child: Text(
+                      widget.gift.note.isEmpty ? 'Notizen: -' : 'Notizen: ${widget.gift.note}',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6.0, left: 20.0, bottom: 16.0, right: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.gift.event.eventname,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        Text(
+                          widget.gift.event.eventDate == null ? '' : '•',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        Text(
+                          eventDateString,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        Text(
+                          widget.gift.event.eventDate == null ? '' : '•',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        widget.gift.event.eventDate == null
+                            ? const Text('')
+                            : Row(
+                                children: [
+                                  const Icon(Icons.timer_sharp, size: 16.0, color: Colors.grey),
+                                  Text(
+                                    widget.gift.getRemainingDaysToEvent() == 1 ? ' ${widget.gift.getRemainingDaysToEvent()} Tag' : ' ${widget.gift.getRemainingDaysToEvent()} Tage',
+                                    style: TextStyle(
+                                      color: _getRemainingDaysColor(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
