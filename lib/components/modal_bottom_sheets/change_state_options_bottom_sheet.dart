@@ -73,7 +73,7 @@ class _ChangeStateOptionsBottomSheetState extends State<ChangeStateOptionsBottom
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Geschenk archivieren?'),
+          title: const Text('Geschenk zu bereits geschenkt Liste hinzufügen?'),
           actions: <Widget>[
             TextButton(
               child: const Text(

@@ -173,47 +173,49 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
     }
   }
 
-  Future<bool> showGoBackDialog() async {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: widget.contactBoxPosition == -1 ? const Text('Kontakt erstellen wirklich abbrechen?') : const Text('Kontakt bearbeiten wirklich abbrechen?'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text(
-                'Nein',
-                style: TextStyle(
-                  color: Colors.cyanAccent,
-                ),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.cyanAccent,
-                onPrimary: Colors.black87,
-              ),
-              child: const Text('Ja'),
-              onPressed: () {
-                FocusScope.of(context).requestFocus(FocusNode());
-                Navigator.pop(context);
-                Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(1));
-              },
-            ),
-          ],
-        );
-      },
-    );
+  Future<bool> showGoBackDialogWhenContactEdited() async {
+    isContactInCreationProgress
+        ? showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: widget.contactBoxPosition == -1 ? const Text('Kontakt erstellen wirklich abbrechen?') : const Text('Kontakt bearbeiten wirklich abbrechen?'),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text(
+                      'Nein',
+                      style: TextStyle(
+                        color: Colors.cyanAccent,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.cyanAccent,
+                      onPrimary: Colors.black87,
+                    ),
+                    child: const Text('Ja'),
+                    onPressed: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      Navigator.pop(context);
+                      Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(1));
+                    },
+                  ),
+                ],
+              );
+            },
+          )
+        : null;
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: isContactInCreationProgress ? showGoBackDialog : null,
+      onWillPop: showGoBackDialogWhenContactEdited,
       child: Scaffold(
         appBar: AppBar(
           title: widget.contactBoxPosition == -1 ? const Text('Kontakt erstellen') : const Text('Kontakt bearbeiten'),
@@ -258,9 +260,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
                           errorText: contactnameErrorText.isEmpty ? null : contactnameErrorText,
                         ),
                         onChanged: (_) => {
-                          setState(() {
-                            isContactInCreationProgress = true;
-                          }),
+                          isContactInCreationProgress = true,
                         },
                       ),
                       TextFormField(

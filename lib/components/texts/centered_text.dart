@@ -15,9 +15,13 @@ class CenteredText extends StatelessWidget {
     return SizedBox(
       height: MediaQuery.of(context).size.height / divider,
       child: Center(
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 16.0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 16.0),
+          ),
         ),
       ),
     );

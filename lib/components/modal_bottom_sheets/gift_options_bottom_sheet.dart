@@ -74,7 +74,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Geschenk archivieren?'),
+          title: const Text('Geschenk zu bereits geschenkt Liste hinzufügen?'),
           actions: <Widget>[
             TextButton(
               child: const Text(
@@ -187,7 +187,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
             ListTile(
               onTap: _showArchiveGiftDialog,
               leading: const Icon(Icons.archive_rounded, color: Colors.cyanAccent),
-              title: const Text('Archivieren'),
+              title: const Text('Zu bereits geschenkt hinzufügen'),
             ),
           ],
         ),

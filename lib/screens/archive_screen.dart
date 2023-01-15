@@ -52,7 +52,10 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Archiv von ${widget.contact.contactname}'),
+        title: Text(
+          'Bereits geschenkt an ${widget.contact.contactname}',
+          overflow: TextOverflow.fade,
+        ),
       ),
       body: FutureBuilder(
         future: _getArchivedGiftsFromContact(),
@@ -64,10 +67,10 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
               );
             default:
               if (snapshot.hasError) {
-                return const CenteredText(text: 'Archiv Geschenkliste konnte nicht geladen werden.');
+                return const CenteredText(text: 'Liste konnte nicht geladen werden.');
               } else {
                 if (archivedGifts.isEmpty) {
-                  return const CenteredText(text: 'Noch keine Geschenke im Archiv vorhanden.');
+                  return const CenteredText(text: 'Noch keine Geschenke in der Liste vorhanden.');
                 } else {
                   return Timeline.tileBuilder(
                     padding: const EdgeInsets.only(left: 20.0),

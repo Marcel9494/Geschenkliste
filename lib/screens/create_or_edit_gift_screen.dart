@@ -47,7 +47,6 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   List<String> eventNames = [];
   List<Contact> contacts = [];
   List<String> contactNames = [];
-  //List<DateTime?> contactBirthdays = [];
   List<String> giftStateList = [];
   String selectedEvent = '';
   String selectedContact = '';
@@ -86,20 +85,20 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
       contacts[i].nextBirthday = contacts[i].getNextBirthday();
       contacts[i].birthdayAge = contacts[i].getBirthdayAge();
       contactNames.add(contacts[i].contactname);
-      //contactBirthdays.add(contacts[i].birthday);
     }
     contactNames.sort((first, second) => first.compareTo(second));
-    //contactBirthdays.sort((first, second) => first!.compareTo(second!));
+    contacts.sort((first, second) => first.contactname.compareTo(second.contactname));
     setState(() {
+      if (newBirthday.isEmpty) {
+        selectedBirthday = dateFormatter.format(contacts[0].birthday!);
+      }
       if (newContactname.isEmpty) {
         selectedContact = contactNames[0];
-        // TODO hier weitermachen und richtigen Geburtstag anzeigen lassen
-        //selectedBirthday = dateFormatter.format(contactBirthdays[0]!);
       } else {
         for (int i = 0; i < contactNames.length; i++) {
           if (newContactname == contactNames[i]) {
             selectedContact = contactNames[i];
-            //selectedBirthday = dateFormatter.format(contactBirthdays[i]!);
+            selectedBirthday = dateFormatter.format(contacts[i].birthday!);
             break;
           }
         }
@@ -112,14 +111,16 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     for (int i = 0; i < contacts.length; i++) {
       if (selectedContact == contacts[i].contactname && contacts[i].birthday != null && contacts[i].nextBirthday != null) {
         _eventDateTextController.text = dateFormatter.format(contacts[i].nextBirthday!) + ' • ${contacts[i].birthdayAge}. Geburtstag';
+        selectedBirthday = dateFormatter.format(contacts[i].birthday!);
         break;
       }
       _eventDateTextController.text = '';
+      selectedBirthday = '';
     }
     setState(() {});
   }
 
-  Future<Gift> _getGiftData() async {
+  Future<Gift> _loadGiftData() async {
     var giftBox = await Hive.openBox('gifts');
     gift = await giftBox.getAt(widget.giftBoxPosition);
     _giftnameTextController.text = gift.giftname;
@@ -128,10 +129,19 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     // TODO hier weitermachen und EventDate Datenhaltung vereinfachen abgespeichertes Format in Hive ist jetzt: YYYY-MM-DD und Anzeige ist: DD.MM.YYYY
     parsedEventDate = gift.event.eventDate;
     if (gift.event.eventDate != null) {
-      _eventDateTextController.text = dateFormatter.format(gift.event.eventDate!);
+      if (selectedEvent == Events.birthday.name) {
+        _eventDateTextController.text = dateFormatter.format(gift.event.eventDate!) + ' • ${gift.contact.getBirthdayAge()}. Geburtstag';
+      } else {
+        _eventDateTextController.text = dateFormatter.format(gift.event.eventDate!);
+      }
+    } else {
+      _eventDateTextController.text = '';
     }
     selectedEvent = gift.event.eventname;
     selectedContact = gift.contact.contactname;
+    if (gift.contact.birthday != null) {
+      selectedBirthday = dateFormatter.format(gift.contact.birthday!);
+    }
     selectedGiftState = gift.giftState;
     return gift;
   }
@@ -202,46 +212,48 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     });
   }
 
-  Future<bool> showGoBackDialog() async {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: widget.giftBoxPosition == -1 ? const Text('Geschenk erstellen wirklich abbrechen?') : const Text('Geschenk bearbeiten wirklich abbrechen?'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text(
-                'Nein',
-                style: TextStyle(
-                  color: Colors.cyanAccent,
-                ),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.cyanAccent,
-                onPrimary: Colors.black87,
-              ),
-              child: const Text('Ja'),
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(0));
-              },
-            ),
-          ],
-        );
-      },
-    );
+  Future<bool> showGoBackDialogWhenGiftEdited() async {
+    isGiftInCreationProgress
+        ? showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: widget.giftBoxPosition == -1 ? const Text('Geschenk erstellen wirklich abbrechen?') : const Text('Geschenk bearbeiten wirklich abbrechen?'),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text(
+                      'Nein',
+                      style: TextStyle(
+                        color: Colors.cyanAccent,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.cyanAccent,
+                      onPrimary: Colors.black87,
+                    ),
+                    child: const Text('Ja'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(0));
+                    },
+                  ),
+                ],
+              );
+            },
+          )
+        : null;
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: isGiftInCreationProgress ? showGoBackDialog : null,
+      onWillPop: showGoBackDialogWhenGiftEdited,
       child: Scaffold(
         appBar: AppBar(
           title: widget.giftBoxPosition == -1 ? const Text('Geschenk erstellen') : const Text('Geschenk bearbeiten'),
@@ -251,7 +263,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
               ? null
               : isContactEdited || isEventDateEdited
                   ? null
-                  : _getGiftData(),
+                  : _loadGiftData(),
           builder: (BuildContext context, AsyncSnapshot<Gift> snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
@@ -291,14 +303,13 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                             errorText: giftnameErrorText.isEmpty ? null : giftnameErrorText,
                           ),
                           onChanged: (_) => {
-                            setState(() {
-                              isGiftInCreationProgress = true;
-                            }),
+                            isGiftInCreationProgress = true,
                           },
                         ),
                         Row(
                           children: [
                             Expanded(
+                              flex: 2,
                               child: DropdownButtonFormField<String>(
                                 value: selectedContact,
                                 icon: const Icon(Icons.keyboard_arrow_down_rounded),
@@ -328,84 +339,70 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                                 }).toList(),
                               ),
                             ),
-                            IconButton(
-                              onPressed: () => Navigator.pushNamed(context, '/createOrEditContact',
-                                      arguments: CreateContactScreenArguments(
-                                          -1, true, (contactname) => setState(() => newContactname = contactname), (birthday) => setState(() => newBirthday = birthday)))
-                                  .then((_) => _getContactList().then((_) => _setBirthdayDateFromContact())),
-                              icon: const Icon(Icons.person_add_rounded),
+                            Expanded(
+                              child: IconButton(
+                                onPressed: () => Navigator.pushNamed(context, '/createOrEditContact',
+                                        arguments: CreateContactScreenArguments(
+                                            -1, true, (contactname) => setState(() => newContactname = contactname), (birthday) => setState(() => newBirthday = birthday)))
+                                    .then((_) => _getContactList().then((_) => _setBirthdayDateFromContact())),
+                                icon: const Icon(Icons.person_add_rounded),
+                              ),
                             ),
                           ],
                         ),
-                        DropdownButtonFormField<String>(
-                          value: selectedGiftState,
-                          icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                          elevation: 16,
-                          isExpanded: true,
-                          decoration: const InputDecoration(
-                            prefixIcon: Padding(
-                              padding: EdgeInsets.only(left: 4.0),
-                              child: Icon(Icons.tips_and_updates_rounded),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: DropdownButtonFormField<String>(
+                                value: selectedEvent,
+                                icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                                elevation: 16,
+                                isExpanded: true,
+                                decoration: const InputDecoration(
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.only(left: 4.0),
+                                    child: Icon(Icons.event_rounded),
+                                  ),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
+                                  ),
+                                ),
+                                onChanged: (String? newEvent) {
+                                  setState(() {
+                                    selectedEvent = newEvent!;
+                                    isContactEdited = true;
+                                    isGiftInCreationProgress = true;
+                                    if (selectedEvent == Events.birthday.name) {
+                                      _setBirthdayDateFromContact();
+                                    } else if (selectedEvent == Events.christmas.name) {
+                                      _eventDateTextController.text = dateFormatter.format(events[2].eventDate as DateTime);
+                                    } else if (selectedEvent == Events.nicholas.name) {
+                                      _eventDateTextController.text = dateFormatter.format(events[3].eventDate as DateTime);
+                                    } else if (selectedEvent == Events.easter.name) {
+                                      _eventDateTextController.text = dateFormatter.format(events[4].eventDate as DateTime);
+                                    } else if (selectedEvent == Events.wedding.name || selectedEvent == Events.anyDate.name) {
+                                      _eventDateTextController.text = '';
+                                    }
+                                  });
+                                },
+                                items: eventNames.map<DropdownMenuItem<String>>((String event) {
+                                  return DropdownMenuItem<String>(
+                                    value: event,
+                                    child: Text(event),
+                                  );
+                                }).toList(),
+                              ),
                             ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
+                            Expanded(
+                              child: Text(
+                                selectedEvent == Events.birthday.name ? selectedBirthday : '',
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                style: TextStyle(fontSize: 16.0),
+                              ),
                             ),
-                          ),
-                          onChanged: (String? newGiftState) {
-                            setState(() {
-                              selectedGiftState = newGiftState!;
-                              isContactEdited = true;
-                              isGiftInCreationProgress = true;
-                            });
-                          },
-                          items: giftStateList.map<DropdownMenuItem<String>>((String event) {
-                            return DropdownMenuItem<String>(
-                              value: event,
-                              child: Text(event),
-                            );
-                          }).toList(),
-                        ),
-                        DropdownButtonFormField<String>(
-                          value: selectedEvent,
-                          icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                          elevation: 16,
-                          isExpanded: true,
-                          decoration: const InputDecoration(
-                            prefixIcon: Padding(
-                              padding: EdgeInsets.only(left: 4.0),
-                              child: Icon(Icons.event_rounded),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
-                            ),
-                          ),
-                          onChanged: (String? newEvent) {
-                            setState(() {
-                              selectedEvent = newEvent!;
-                              isContactEdited = true;
-                              isGiftInCreationProgress = true;
-                              if (selectedEvent == Events.birthday.name) {
-                                _setBirthdayDateFromContact();
-                              } else if (selectedEvent == Events.christmas.name) {
-                                _eventDateTextController.text = dateFormatter.format(events[2].eventDate as DateTime);
-                              } else if (selectedEvent == Events.nicholas.name) {
-                                _eventDateTextController.text = dateFormatter.format(events[3].eventDate as DateTime);
-                              } else if (selectedEvent == Events.easter.name) {
-                                _eventDateTextController.text = dateFormatter.format(events[4].eventDate as DateTime);
-                              } else if (selectedEvent == Events.wedding.name || selectedEvent == Events.anyDate.name) {
-                                _eventDateTextController.text = '';
-                              }
-                            });
-                          },
-                          items: eventNames.map<DropdownMenuItem<String>>((String event) {
-                            return DropdownMenuItem<String>(
-                              value: event,
-                              child: Text(event),
-                            );
-                          }).toList(),
-                        ),
-                        Text(
-                          'Geburtstag: $selectedBirthday',
+                          ],
                         ),
                         TextFormField(
                           controller: _eventDateTextController,
@@ -451,6 +448,34 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                             });
                           },
                         ),
+                        DropdownButtonFormField<String>(
+                          value: selectedGiftState,
+                          icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                          elevation: 16,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            prefixIcon: Padding(
+                              padding: EdgeInsets.only(left: 4.0),
+                              child: Icon(Icons.tips_and_updates_rounded),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
+                            ),
+                          ),
+                          onChanged: (String? newGiftState) {
+                            setState(() {
+                              selectedGiftState = newGiftState!;
+                              isContactEdited = true;
+                              isGiftInCreationProgress = true;
+                            });
+                          },
+                          items: giftStateList.map<DropdownMenuItem<String>>((String event) {
+                            return DropdownMenuItem<String>(
+                              value: event,
+                              child: Text(event),
+                            );
+                          }).toList(),
+                        ),
                         TextFormField(
                           controller: _notesTextController,
                           textAlignVertical: TextAlignVertical.center,
@@ -472,9 +497,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                             counterText: '',
                           ),
                           onChanged: (_) => {
-                            setState(() {
-                              isGiftInCreationProgress = true;
-                            }),
+                            isGiftInCreationProgress = true,
                           },
                         ),
                         SaveButton(

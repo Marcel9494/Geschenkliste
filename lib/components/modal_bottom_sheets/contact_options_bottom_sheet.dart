@@ -115,7 +115,7 @@ class _ContactOptionsBottomSheetState extends State<ContactOptionsBottomSheet> {
       giftBox.deleteAt(giftBoxPositionsToDelete[i]);
     }
     contactBox.deleteAt(widget.contactBoxPosition);
-    _showFlushbar('Alle Geschenke und Kontakt ${contact.contactname} wurde gelöscht.');
+    _showFlushbar('Alle Geschenke und Kontakt ${contact.contactname} wurden gelöscht.');
   }
 
   void _showDeleteContactDialog() async {
@@ -206,7 +206,7 @@ class _ContactOptionsBottomSheetState extends State<ContactOptionsBottomSheet> {
             ListTile(
               onTap: _getContactAndShowArchiveScreen,
               leading: const Icon(Icons.archive_rounded, color: Colors.cyanAccent),
-              title: const Text('Archiv'),
+              title: const Text('Bereits geschenkt'),
             ),
             const Divider(height: 0, color: Colors.grey),
             ListTile(
