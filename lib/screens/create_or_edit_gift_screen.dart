@@ -47,15 +47,15 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   List<String> eventNames = [];
   List<Contact> contacts = [];
   List<String> contactNames = [];
+  //List<DateTime?> contactBirthdays = [];
   List<String> giftStateList = [];
-  GiftState giftStatus = GiftState.idea;
   String selectedEvent = '';
   String selectedContact = '';
+  String selectedBirthday = '';
   String newContactname = '';
   String newBirthday = '';
   String selectedGiftState = '';
   String giftnameErrorText = '';
-  String contactnameErrorText = '';
   String eventDateErrorText = '';
   DateTime? parsedEventDate;
   bool isContactEdited = false;
@@ -84,16 +84,23 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     for (int i = 0; i < contactBox.length; i++) {
       contacts.add(contactBox.getAt(i));
       contacts[i].nextBirthday = contacts[i].getNextBirthday();
+      contacts[i].birthdayAge = contacts[i].getBirthdayAge();
       contactNames.add(contacts[i].contactname);
+      //contactBirthdays.add(contacts[i].birthday);
     }
     contactNames.sort((first, second) => first.compareTo(second));
+    //contactBirthdays.sort((first, second) => first!.compareTo(second!));
     setState(() {
       if (newContactname.isEmpty) {
         selectedContact = contactNames[0];
+        // TODO hier weitermachen und richtigen Geburtstag anzeigen lassen
+        //selectedBirthday = dateFormatter.format(contactBirthdays[0]!);
       } else {
         for (int i = 0; i < contactNames.length; i++) {
           if (newContactname == contactNames[i]) {
             selectedContact = contactNames[i];
+            //selectedBirthday = dateFormatter.format(contactBirthdays[i]!);
+            break;
           }
         }
       }
@@ -104,7 +111,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   void _setBirthdayDateFromContact() async {
     for (int i = 0; i < contacts.length; i++) {
       if (selectedContact == contacts[i].contactname && contacts[i].birthday != null && contacts[i].nextBirthday != null) {
-        _eventDateTextController.text = dateFormatter.format(contacts[i].nextBirthday!);
+        _eventDateTextController.text = dateFormatter.format(contacts[i].nextBirthday!) + ' • ${contacts[i].birthdayAge}. Geburtstag';
         break;
       }
       _eventDateTextController.text = '';
@@ -154,7 +161,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     // TODO Fehler abfangen selectedContactIndex == -1 || selectedEventIndex == -1
     var giftBox = await Hive.openBox('gifts');
     if (_eventDateTextController.text.isNotEmpty) {
-      events[selectedEventIndex].eventDate = FormattingStringToYYYYMMDD(_eventDateTextController.text);
+      events[selectedEventIndex].eventDate = FormattingStringToYYYYMMDD(_eventDateTextController.text.substring(0, 10));
     }
     Gift gift = Gift()
       ..giftname = _giftnameTextController.text.trim()
@@ -219,9 +226,9 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                 onPrimary: Colors.black87,
               ),
               child: const Text('Ja'),
-              onPressed: () => {
-                Navigator.pop(context),
-                Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(0)),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(0));
               },
             ),
           ],
@@ -303,9 +310,9 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                                     borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
                                   ),
                                 ),
-                                onChanged: (String? contact) {
+                                onChanged: (String? newContactname) {
                                   setState(() {
-                                    selectedContact = contact!;
+                                    selectedContact = newContactname!;
                                     isContactEdited = true;
                                     isGiftInCreationProgress = true;
                                     if (selectedEvent == Events.birthday.name) {
@@ -396,6 +403,9 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                               child: Text(event),
                             );
                           }).toList(),
+                        ),
+                        Text(
+                          'Geburtstag: $selectedBirthday',
                         ),
                         TextFormField(
                           controller: _eventDateTextController,

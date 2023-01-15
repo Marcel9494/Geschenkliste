@@ -45,6 +45,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
   String birthdayDateErrorText = '';
   late Contact loadedContact;
   String newContactname = '';
+  bool isContactInCreationProgress = false;
   set string(String value) => setState(() => newContactname = value);
 
   Future<Contact> _getContactData() async {
@@ -141,7 +142,6 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
     for (int i = 0; i < giftBox.length; i++) {
       Gift gift = giftBox.getAt(i);
       // TODO in gift Klasse auslagern als eigene Funktion?
-      // TODO hier weitermachen was soll passieren wenn Kontakt gelöscht wird, aber es noch Geschenke für diesen Kontakt gibt?
       if (gift.contact.contactname == loadedContact.contactname || (gift.contact.contactname == loadedContact.contactname && gift.contact.birthday == loadedContact.birthday)) {
         gift.contact.contactname = _contactnameTextController.text.trim();
         gift.contact.birthday = formattedBirthday;
@@ -173,16 +173,47 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
     }
   }
 
-  Future<bool> goBack() async {
-    FocusScope.of(context).requestFocus(FocusNode());
-    Navigator.pop(context);
+  Future<bool> showGoBackDialog() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: widget.contactBoxPosition == -1 ? const Text('Kontakt erstellen wirklich abbrechen?') : const Text('Kontakt bearbeiten wirklich abbrechen?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Nein',
+                style: TextStyle(
+                  color: Colors.cyanAccent,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.cyanAccent,
+                onPrimary: Colors.black87,
+              ),
+              child: const Text('Ja'),
+              onPressed: () {
+                FocusScope.of(context).requestFocus(FocusNode());
+                Navigator.pop(context);
+                Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(1));
+              },
+            ),
+          ],
+        );
+      },
+    );
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: goBack,
+      onWillPop: isContactInCreationProgress ? showGoBackDialog : null,
       child: Scaffold(
         appBar: AppBar(
           title: widget.contactBoxPosition == -1 ? const Text('Kontakt erstellen') : const Text('Kontakt bearbeiten'),
@@ -226,6 +257,11 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
                           counterText: '',
                           errorText: contactnameErrorText.isEmpty ? null : contactnameErrorText,
                         ),
+                        onChanged: (_) => {
+                          setState(() {
+                            isContactInCreationProgress = true;
+                          }),
+                        },
                       ),
                       TextFormField(
                         controller: _birthdayTextController,
@@ -265,6 +301,9 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
                             lastDate: DateTime(2200),
                           );
                           _birthdayTextController.text = dateFormatter.format(parsedBirthdayDate!);
+                          setState(() {
+                            isContactInCreationProgress = true;
+                          });
                         },
                       ),
                       SaveButton(
