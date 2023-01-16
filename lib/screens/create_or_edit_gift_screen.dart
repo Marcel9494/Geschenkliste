@@ -30,12 +30,13 @@ class CreateOrEditGiftScreen extends StatefulWidget {
 }
 
 class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
-  final TextEditingController _giftnameTextController = TextEditingController(text: '');
+  final TextEditingController _giftnameTextController = TextEditingController(text: 'Noch keine Idee');
   final TextEditingController _contactnameTextController = TextEditingController(text: '');
   final TextEditingController _notesTextController = TextEditingController(text: '');
   final TextEditingController _eventDateTextController = TextEditingController(text: '');
   final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
   final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
+  final FocusNode giftnameFocusNode = FocusNode();
   List<Event> events = [
     Event(eventname: Events.birthday.name),
     Event(eventname: Events.wedding.name),
@@ -177,7 +178,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
       ..giftname = _giftnameTextController.text.trim()
       ..contact = contacts[selectedContactIndex]
       ..giftState = selectedGiftState
-      ..note = _notesTextController.text
+      ..note = _notesTextController.text.trim()
       ..event = events[selectedEventIndex];
     if (widget.giftBoxPosition == -1) {
       giftBox.add(gift);
@@ -209,6 +210,13 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
       _eventDateTextController.text = '';
       parsedEventDate = null;
       isEventDateEdited = true;
+    });
+  }
+
+  void _clearGiftname() {
+    setState(() {
+      _giftnameTextController.text = '';
+      FocusScope.of(context).requestFocus(giftnameFocusNode);
     });
   }
 
@@ -288,6 +296,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                           controller: _giftnameTextController,
                           textAlignVertical: TextAlignVertical.center,
                           maxLength: 35,
+                          focusNode: giftnameFocusNode,
                           decoration: InputDecoration(
                             hintText: 'Geschenkname / Idee',
                             hintStyle: const TextStyle(color: Colors.white),
@@ -299,6 +308,15 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                             focusedBorder: const UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
                             ),
+                            suffixIcon: _giftnameTextController.text.isEmpty
+                                ? null
+                                : IconTheme(
+                                    data: const IconThemeData(color: Colors.cyanAccent),
+                                    child: IconButton(
+                                      onPressed: _clearGiftname,
+                                      icon: const Icon(Icons.highlight_remove_rounded),
+                                    ),
+                                  ),
                             counterText: '',
                             errorText: giftnameErrorText.isEmpty ? null : giftnameErrorText,
                           ),
