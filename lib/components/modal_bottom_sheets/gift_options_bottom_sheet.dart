@@ -124,7 +124,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
         setState(() {
           giftBox.deleteAt(widget.giftBoxPosition);
         });
-        _showFlushbar('Geschenk wurde zu ${gift.contact.contactname}\'s Archiv hinzugefügt.');
+        _showFlushbar('Geschenk wurde zu ${gift.contact.contactname}\'s bereits geschenkt Liste hinzugefügt.');
         break;
       }
     }

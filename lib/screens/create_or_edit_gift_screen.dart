@@ -60,6 +60,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   DateTime? parsedEventDate;
   bool isContactEdited = false;
   bool isEventDateEdited = false;
+  bool isGiftnameEdited = false;
   bool isGiftInCreationProgress = false;
   late Gift gift;
 
@@ -216,6 +217,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   void _clearGiftname() {
     setState(() {
       _giftnameTextController.text = '';
+      isGiftnameEdited = true;
       FocusScope.of(context).requestFocus(giftnameFocusNode);
     });
   }
@@ -269,7 +271,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
         body: FutureBuilder<Gift>(
           future: widget.giftBoxPosition == -1
               ? null
-              : isContactEdited || isEventDateEdited
+              : isContactEdited || isEventDateEdited || isGiftnameEdited
                   ? null
                   : _loadGiftData(),
           builder: (BuildContext context, AsyncSnapshot<Gift> snapshot) {

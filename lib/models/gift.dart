@@ -65,13 +65,9 @@ class Gift extends HiveObject {
     if (event.eventDate == null) {
       return 9999;
     }
-    DateTime eventDate = DateTime(DateTime.now().year + 1, event.eventDate!.month, event.eventDate!.day);
+    DateTime eventDate = DateTime(event.eventDate!.year, event.eventDate!.month, event.eventDate!.day);
     DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    int daysPerYear = 365;
-    if (event.eventDate!.year % 4 == 0) {
-      daysPerYear = 366; // Schaltjahr
-    }
-    return (eventDate.difference(today).inHours / 24).round() % daysPerYear;
+    return (eventDate.difference(today).inHours / 24).round();
   }
 }
 

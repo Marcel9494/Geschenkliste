@@ -109,7 +109,7 @@ class _ChangeStateOptionsBottomSheetState extends State<ChangeStateOptionsBottom
 
   void _showArchievedFlushbar() {
     Flushbar(
-      message: 'Geschenk wurde zu ${currentGift.contact.contactname}\'s Archiv hinzugefügt.',
+      message: 'Geschenk wurde zu ${currentGift.contact.contactname}\'s bereits geschenkt Liste hinzugefügt.',
       icon: const Icon(
         Icons.info_rounded,
         size: 28.0,

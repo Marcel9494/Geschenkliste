@@ -71,6 +71,18 @@ class _GiftCardState extends State<GiftCard> {
     return Colors.red.shade300;
   }
 
+  String _getRemainingDaysToEventText() {
+    int remainingDaysToEvent = widget.gift.getRemainingDaysToEvent();
+    if (remainingDaysToEvent < 0) {
+      return ' Vorbei';
+    } else if (remainingDaysToEvent == 0) {
+      return ' Heute';
+    } else if (remainingDaysToEvent == 1) {
+      return ' ${remainingDaysToEvent.toString()} Tag';
+    }
+    return ' ${remainingDaysToEvent.toString()} Tage';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -219,7 +231,7 @@ class _GiftCardState extends State<GiftCard> {
                                 children: [
                                   const Icon(Icons.timer_sharp, size: 16.0, color: Colors.grey),
                                   Text(
-                                    widget.gift.getRemainingDaysToEvent() == 1 ? ' ${widget.gift.getRemainingDaysToEvent()} Tag' : ' ${widget.gift.getRemainingDaysToEvent()} Tage',
+                                    _getRemainingDaysToEventText(),
                                     style: TextStyle(
                                       color: _getRemainingDaysColor(),
                                     ),
