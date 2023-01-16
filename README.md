@@ -10,3 +10,9 @@ What skills I learned / improved in this project:
 - UX
 - Unit Testing
 - Release an app in the Google Play Store
+
+Tools / Platforms:
+
+- Android Studio (IDE)
+- Github
+- Google Play Console for releasing the app
