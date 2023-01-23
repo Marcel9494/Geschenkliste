@@ -160,8 +160,12 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
   }
 
   void _clearBirthday() {
-    _birthdayTextController.text = '';
-    parsedBirthdayDate = null;
+    setState(() {
+      _birthdayTextController.text = '';
+      parsedBirthdayDate = null;
+      formattedBirthday = null;
+      isContactInCreationProgress = true;
+    });
   }
 
   void _setButtonAnimation(bool successful) {
@@ -221,7 +225,11 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
           title: widget.contactBoxPosition == -1 ? const Text('Kontakt erstellen') : const Text('Kontakt bearbeiten'),
         ),
         body: FutureBuilder<Contact>(
-          future: widget.contactBoxPosition == -1 ? null : _getContactData(),
+          future: widget.contactBoxPosition == -1
+              ? null
+              : isContactInCreationProgress
+                  ? null
+                  : _getContactData(),
           builder: (BuildContext context, AsyncSnapshot<Contact> snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
@@ -298,12 +306,15 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
                             initialDate: DateTime(2000),
                             initialDatePickerMode: DatePickerMode.year,
                             firstDate: DateTime(1900),
-                            lastDate: DateTime(2200),
+                            lastDate: DateTime.now(),
                           );
-                          _birthdayTextController.text = dateFormatter.format(parsedBirthdayDate!);
-                          setState(() {
-                            isContactInCreationProgress = true;
-                          });
+                          if (parsedBirthdayDate != null) {
+                            _birthdayTextController.text = dateFormatter.format(parsedBirthdayDate!);
+                            formattedBirthday = FormattingStringToYYYYMMDD(_birthdayTextController.text);
+                            setState(() {
+                              isContactInCreationProgress = true;
+                            });
+                          }
                         },
                       ),
                       SaveButton(

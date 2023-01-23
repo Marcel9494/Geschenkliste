@@ -23,6 +23,9 @@ import '/models/screen_arguments/archived_gift_screen_arguments.dart';
 import '/models/screen_arguments/bottom_nav_bar_screen_arguments.dart';
 
 void main() async {
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: const Color(0xFF171717),
+  ));
   await Hive.initFlutter();
   Hive.registerAdapter(ContactAdapter());
   Hive.registerAdapter(EventAdapter());
