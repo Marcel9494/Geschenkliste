@@ -54,6 +54,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(0));
   }
 
+  void _showImpressumDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Impressum'),
+          content: const Text('MDM Studio\n\nE-Mail Adresse:\nMarcel.Geirhos@gmail.com'),
+          actions: <Widget>[
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.cyanAccent,
+                onPrimary: Colors.black87,
+              ),
+              child: const Text('OK'),
+              onPressed: () => {
+                Navigator.pop(context),
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,11 +104,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: const Text('Rechtliches'),
             tiles: <SettingsTile>[
               SettingsTile.navigation(
-                leading: const Icon(Icons.article_rounded),
-                title: const Text('Allgemeine Geschäftsbedingungen'),
-                trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16.0),
-              ),
-              SettingsTile.navigation(
                 leading: const Icon(Icons.privacy_tip_rounded),
                 title: const Text('Datenschutzerklärung'),
                 trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16.0),
@@ -93,6 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 leading: const Icon(Icons.art_track_rounded),
                 title: const Text('Impressum'),
                 trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16.0),
+                onPressed: (_) => _showImpressumDialog(),
               ),
             ],
           ),
