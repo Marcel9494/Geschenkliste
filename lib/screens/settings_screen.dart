@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '/models/screen_arguments/bottom_nav_bar_screen_arguments.dart';
 
@@ -78,6 +79,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  void _showDataProtectionWebsite() async {
+    const url = 'https://github.com/Marcel9494/Geschenkliste/wiki/Privacy-Policy';
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Datenschutzerklärung konnte nicht geladen werden. $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,6 +118,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 leading: const Icon(Icons.privacy_tip_rounded),
                 title: const Text('Datenschutzerklärung'),
                 trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16.0),
+                onPressed: (_) => _showDataProtectionWebsite(),
               ),
               SettingsTile.navigation(
                 leading: const Icon(Icons.art_track_rounded),
