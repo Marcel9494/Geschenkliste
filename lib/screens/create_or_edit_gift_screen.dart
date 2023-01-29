@@ -264,6 +264,8 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                     ),
                     child: const Text('Ja'),
                     onPressed: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      Navigator.pop(context);
                       Navigator.pop(context);
                       Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(0));
                     },

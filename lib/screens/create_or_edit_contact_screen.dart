@@ -140,7 +140,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
     var giftBox = await Hive.openBox('gifts');
     for (int i = 0; i < giftBox.length; i++) {
       Gift gift = giftBox.getAt(i);
-      // TODO in gift Klasse auslagern als eigene Funktion?
+      // TODO niedrige Prio! In gift Klasse auslagern als eigene Funktion?
       if (gift.contact.contactname == loadedContact.contactname || (gift.contact.contactname == loadedContact.contactname && gift.contact.birthday == loadedContact.birthday)) {
         gift.contact.contactname = _contactnameTextController.text.trim();
         gift.contact.birthday = savedBirthdayFormat;
@@ -202,6 +202,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
                     child: const Text('Ja'),
                     onPressed: () {
                       FocusScope.of(context).requestFocus(FocusNode());
+                      Navigator.pop(context);
                       Navigator.pop(context);
                       Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(1));
                     },
