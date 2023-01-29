@@ -56,8 +56,9 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   String newBirthday = '';
   String selectedGiftState = '';
   String giftnameErrorText = '';
+  String contactnameErrorText = '';
+  String eventErrorText = '';
   String eventDateErrorText = '';
-  DateTime? parsedEventDate;
   bool isContactEdited = false;
   bool isEventDateEdited = false;
   bool isGiftnameEdited = false;
@@ -91,6 +92,11 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     contactNames.sort((first, second) => first.compareTo(second));
     contacts.sort((first, second) => first.contactname.compareTo(second.contactname));
     setState(() {
+      if (contacts.isEmpty) {
+        contactnameErrorText = 'Bitte erstellen Sie zuerst einen Kontakt.';
+        return;
+      }
+      contactnameErrorText = '';
       if (newBirthday.isEmpty) {
         selectedBirthday = dateFormatter.format(contacts[0].birthday!);
       }
@@ -128,8 +134,6 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     _giftnameTextController.text = gift.giftname;
     _contactnameTextController.text = gift.contact.contactname;
     _notesTextController.text = gift.note;
-    // TODO hier weitermachen und EventDate Datenhaltung vereinfachen abgespeichertes Format in Hive ist jetzt: YYYY-MM-DD und Anzeige ist: DD.MM.YYYY
-    parsedEventDate = gift.event.eventDate;
     if (gift.event.eventDate != null) {
       if (selectedEvent == Events.birthday.name) {
         _eventDateTextController.text = dateFormatter.format(gift.event.eventDate!) + ' • ${gift.contact.getBirthdayAge()}. Geburtstag';
@@ -170,10 +174,23 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
         break;
       }
     }
-    // TODO Fehler abfangen selectedContactIndex == -1 || selectedEventIndex == -1
+    if (selectedContactIndex == -1) {
+      setState(() {
+        contactnameErrorText = 'Bitte erstellen oder wählen Sie einen Kontakt aus.';
+        _setButtonAnimation(false);
+      });
+      return;
+    }
+    if (selectedEventIndex == -1) {
+      setState(() {
+        eventErrorText = 'Bitte wählen Sie ein Event aus.';
+        _setButtonAnimation(false);
+      });
+      return;
+    }
     var giftBox = await Hive.openBox('gifts');
     if (_eventDateTextController.text.isNotEmpty) {
-      events[selectedEventIndex].eventDate = FormattingStringToYYYYMMDD(_eventDateTextController.text.substring(0, 10));
+      events[selectedEventIndex].eventDate = StringToSavedDateFormatYYYYMMDD(_eventDateTextController.text.substring(0, 10));
     }
     Gift gift = Gift()
       ..giftname = _giftnameTextController.text.trim()
@@ -209,7 +226,6 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   void _clearEventDate() {
     setState(() {
       _eventDateTextController.text = '';
-      parsedEventDate = null;
       isEventDateEdited = true;
     });
   }
@@ -335,11 +351,12 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                                 icon: const Icon(Icons.keyboard_arrow_down_rounded),
                                 elevation: 16,
                                 isExpanded: true,
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
                                   prefixIcon: Icon(Icons.person_rounded),
                                   focusedBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
                                   ),
+                                  errorText: contactnameErrorText.isEmpty ? null : contactnameErrorText,
                                 ),
                                 onChanged: (String? newContactname) {
                                   setState(() {
@@ -379,7 +396,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                                 icon: const Icon(Icons.keyboard_arrow_down_rounded),
                                 elevation: 16,
                                 isExpanded: true,
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
                                   prefixIcon: Padding(
                                     padding: EdgeInsets.only(left: 4.0),
                                     child: Icon(Icons.event_rounded),
@@ -387,6 +404,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                                   focusedBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(color: Colors.cyanAccent, width: 2.0),
                                   ),
+                                  errorText: eventErrorText.isEmpty ? null : eventErrorText,
                                 ),
                                 onChanged: (String? newEvent) {
                                   setState(() {
@@ -453,7 +471,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                           ),
                           onTap: () async {
                             FocusScope.of(context).requestFocus(FocusNode());
-                            parsedEventDate = await showDatePicker(
+                            DateTime? parsedEventDate = await showDatePicker(
                               context: context,
                               locale: const Locale('de', 'DE'),
                               initialDate: DateTime.now(),
@@ -461,11 +479,13 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
                               firstDate: DateTime.now(),
                               lastDate: DateTime(2100),
                             );
-                            _eventDateTextController.text = dateFormatter.format(parsedEventDate!);
-                            isContactEdited = true;
-                            setState(() {
-                              isGiftInCreationProgress = true;
-                            });
+                            if (parsedEventDate != null) {
+                              _eventDateTextController.text = dateFormatter.format(parsedEventDate);
+                              isContactEdited = true;
+                              setState(() {
+                                isGiftInCreationProgress = true;
+                              });
+                            }
                           },
                         ),
                         DropdownButtonFormField<String>(

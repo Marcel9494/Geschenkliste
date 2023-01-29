@@ -1,5 +1,4 @@
-// TODO bessere Namen überlegen
-DateTime FormattingStringToYYYYMMDD(String inputDate) {
+DateTime StringToSavedDateFormatYYYYMMDD(String inputDate) {
   String day = inputDate.substring(0, 2);
   String month = inputDate.substring(3, 5);
   String year = inputDate.substring(6, 10);

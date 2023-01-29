@@ -39,8 +39,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
   final TextEditingController _birthdayTextController = TextEditingController(text: '');
   final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
   final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
-  DateTime? parsedBirthdayDate;
-  DateTime? formattedBirthday;
+  DateTime? savedBirthdayFormat;
   String contactnameErrorText = '';
   String birthdayDateErrorText = '';
   late Contact loadedContact;
@@ -82,7 +81,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
       return;
     }
     if (_birthdayTextController.text.isNotEmpty) {
-      formattedBirthday = FormattingStringToYYYYMMDD(_birthdayTextController.text);
+      savedBirthdayFormat = StringToSavedDateFormatYYYYMMDD(_birthdayTextController.text);
     }
     if (widget.contactBoxPosition == -1) {
       _addNewContact();
@@ -123,7 +122,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
     var contactBox = await Hive.openBox('contacts');
     Contact newContact = Contact()
       ..contactname = _contactnameTextController.text.trim()
-      ..birthday = formattedBirthday
+      ..birthday = savedBirthdayFormat
       ..archivedGiftsData = [];
     contactBox.add(newContact);
   }
@@ -132,7 +131,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
     var contactBox = await Hive.openBox('contacts');
     Contact updatedContact = Contact()
       ..contactname = _contactnameTextController.text.trim()
-      ..birthday = formattedBirthday
+      ..birthday = savedBirthdayFormat
       ..archivedGiftsData = loadedContact.archivedGiftsData;
     contactBox.putAt(widget.contactBoxPosition, updatedContact);
   }
@@ -144,9 +143,9 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
       // TODO in gift Klasse auslagern als eigene Funktion?
       if (gift.contact.contactname == loadedContact.contactname || (gift.contact.contactname == loadedContact.contactname && gift.contact.birthday == loadedContact.birthday)) {
         gift.contact.contactname = _contactnameTextController.text.trim();
-        gift.contact.birthday = formattedBirthday;
+        gift.contact.birthday = savedBirthdayFormat;
         if (gift.event.eventname == Events.birthday.name) {
-          gift.event.eventDate = formattedBirthday;
+          gift.event.eventDate = savedBirthdayFormat;
         }
         Gift updatedGift = Gift()
           ..giftname = gift.giftname
@@ -162,8 +161,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
   void _clearBirthday() {
     setState(() {
       _birthdayTextController.text = '';
-      parsedBirthdayDate = null;
-      formattedBirthday = null;
+      savedBirthdayFormat = null;
       isContactInCreationProgress = true;
     });
   }
@@ -300,7 +298,7 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
                         ),
                         onTap: () async {
                           FocusScope.of(context).requestFocus(FocusNode());
-                          parsedBirthdayDate = await showDatePicker(
+                          DateTime? parsedBirthdayDate = await showDatePicker(
                             context: context,
                             locale: const Locale('de', 'DE'),
                             initialDate: DateTime(2000),
@@ -309,8 +307,8 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
                             lastDate: DateTime.now(),
                           );
                           if (parsedBirthdayDate != null) {
-                            _birthdayTextController.text = dateFormatter.format(parsedBirthdayDate!);
-                            formattedBirthday = FormattingStringToYYYYMMDD(_birthdayTextController.text);
+                            _birthdayTextController.text = dateFormatter.format(parsedBirthdayDate);
+                            savedBirthdayFormat = StringToSavedDateFormatYYYYMMDD(_birthdayTextController.text);
                             setState(() {
                               isContactInCreationProgress = true;
                             });

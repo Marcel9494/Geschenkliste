@@ -22,7 +22,7 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
   List<String> eventFilter = [];
   late List<Gift> gifts = [];
   int selectedFilterIndex = 0;
-  String giftFilter = 'Alle'; // TODO Eigenes Enum für Geschenkfilter anlegen oder in Geschenk Status integrieren?
+  String giftFilter = 'Alle';
   late Animation<double> _cardFadeInAnimation;
   late AnimationController fadeInAnimation;
 
@@ -104,7 +104,7 @@ class _GiftListScreenState extends State<GiftListScreen> with TickerProviderStat
                               onPressed: () => setState(() {
                                 _clearSearchField();
                               }),
-                              icon: const Icon(Icons.cancel_outlined),
+                              icon: const Icon(Icons.cancel_outlined, size: 20.0),
                             )
                           : null,
                     ),
