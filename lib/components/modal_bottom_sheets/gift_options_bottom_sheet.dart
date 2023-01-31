@@ -97,6 +97,7 @@ class _GiftOptionsBottomSheetState extends State<GiftOptionsBottomSheet> {
               onPressed: () => {
                 _archiveGift(),
                 Navigator.pop(context),
+                Navigator.pop(context),
                 Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(0)),
                 FocusScope.of(context).unfocus(),
               },

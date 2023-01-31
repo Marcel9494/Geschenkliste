@@ -149,6 +149,7 @@ class _ContactOptionsBottomSheetState extends State<ContactOptionsBottomSheet> {
                   contactBox.deleteAt(widget.contactBoxPosition);
                 }),
                 Navigator.pop(context),
+                Navigator.pop(context),
                 Navigator.popAndPushNamed(context, '/bottomNavBar', arguments: BottomNavBarScreenArguments(1)),
                 FocusScope.of(context).unfocus(),
                 _showFlushbar('Kontakt ${contact.contactname} wurde gelöscht.'),
