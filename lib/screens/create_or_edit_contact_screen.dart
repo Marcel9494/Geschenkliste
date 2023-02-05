@@ -144,9 +144,6 @@ class _CreateOrEditContactScreenState extends State<CreateOrEditContactScreen> {
       if (gift.contact.contactname == loadedContact.contactname || (gift.contact.contactname == loadedContact.contactname && gift.contact.birthday == loadedContact.birthday)) {
         gift.contact.contactname = _contactnameTextController.text.trim();
         gift.contact.birthday = savedBirthdayFormat;
-        if (gift.event.eventname == Events.birthday.name) {
-          gift.event.eventDate = savedBirthdayFormat;
-        }
         Gift updatedGift = Gift()
           ..giftname = gift.giftname
           ..contact = gift.contact

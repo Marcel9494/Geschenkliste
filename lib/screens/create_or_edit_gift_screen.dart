@@ -118,6 +118,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
   void _setBirthdayDateFromContact() async {
     for (int i = 0; i < contacts.length; i++) {
       if (selectedContact == contacts[i].contactname && contacts[i].birthday != null && contacts[i].nextBirthday != null) {
+        print('Test: ${contacts[i].nextBirthday!}');
         _eventDateTextController.text = dateFormatter.format(contacts[i].nextBirthday!) + ' • ${contacts[i].birthdayAge}. Geburtstag';
         selectedBirthday = dateFormatter.format(contacts[i].birthday!);
         break;
@@ -136,6 +137,7 @@ class _CreateOrEditGiftScreenState extends State<CreateOrEditGiftScreen> {
     _notesTextController.text = gift.note;
     if (gift.event.eventDate != null) {
       if (selectedEvent == Events.birthday.name) {
+        print(gift.event.eventDate!);
         _eventDateTextController.text = dateFormatter.format(gift.event.eventDate!) + ' • ${gift.contact.getBirthdayAge()}. Geburtstag';
       } else {
         _eventDateTextController.text = dateFormatter.format(gift.event.eventDate!);

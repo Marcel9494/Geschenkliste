@@ -21,14 +21,16 @@ class Contact extends HiveObject {
     if (birthday == null) {
       return 0;
     }
-    if (DateTime.now().month < birthday!.month) {
+    if (birthday!.month > DateTime.now().month) {
       birthdayAge = DateTime.now().year - birthday!.year;
-    } else {
-      if (DateTime.now().day <= birthday!.day) {
+    } else if (birthday!.month == DateTime.now().month) {
+      if (birthday!.day > DateTime.now().day) {
         birthdayAge = DateTime.now().year - birthday!.year;
       } else {
         birthdayAge = (DateTime.now().year + 1) - birthday!.year;
       }
+    } else {
+      birthdayAge = (DateTime.now().year + 1) - birthday!.year;
     }
     return birthdayAge;
   }
@@ -37,14 +39,16 @@ class Contact extends HiveObject {
     if (birthday == null) {
       return DateTime(1, 0, 0);
     }
-    if (DateTime.now().month < birthday!.month) {
+    if (birthday!.month > DateTime.now().month) {
       nextBirthday = DateTime(DateTime.now().year, birthday!.month, birthday!.day);
-    } else {
-      if (DateTime.now().day <= birthday!.day) {
+    } else if (birthday!.month == DateTime.now().month) {
+      if (birthday!.day > DateTime.now().day) {
         nextBirthday = DateTime(DateTime.now().year, birthday!.month, birthday!.day);
       } else {
         nextBirthday = DateTime(DateTime.now().year + 1, birthday!.month, birthday!.day);
       }
+    } else {
+      nextBirthday = DateTime(DateTime.now().year + 1, birthday!.month, birthday!.day);
     }
     return nextBirthday;
   }
