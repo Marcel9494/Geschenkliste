@@ -16,3 +16,4 @@ Tools / Platforms:
 - Android Studio (IDE)
 - Github
 - Google Play Console for releasing the app
+- Google Ads for marketing
